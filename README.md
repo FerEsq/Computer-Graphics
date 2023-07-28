@@ -1,3 +1,2 @@
-# Computer-Graphics
-Repositorio para el curso de gráficas por computadoras.
-Sexto semestre - 2023
+# Tarea-2
+Branch para la tarea 2 del curso.
