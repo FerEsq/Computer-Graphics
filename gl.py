@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 31.07.2023
+              Modificado el 01.08.2023
  '''
 
 import struct
@@ -264,18 +264,18 @@ class Renderer(object):
 
             for face in model.faces:
                 vertCount = len(face)
-                v0=model.vertices[face[0][0] -1]
-                v1=model.vertices[face[1][0] -1]
-                v2=model.vertices[face[2][0] -1]
+                v0 = model.vertices[face[0][0] - 1]
+                v1 = model.vertices[face[1][0] - 1]
+                v2 = model.vertices[face[2][0] - 1]
                 if vertCount == 4:
-                    v3=model.vertices[face[3][0] -1]
+                    v3 = model.vertices[face[3][0] - 1]
 
                 if self.vertexShader:
-                    v0=self.vertexShader(v0, modelMatrix=mMatrix)
-                    v1=self.vertexShader(v1, modelMatrix=mMatrix)
-                    v2=self.vertexShader(v2, modelMatrix=mMatrix)
+                    v0 = self.vertexShader(v0, modelMatrix = mMatrix)
+                    v1 = self.vertexShader(v1, modelMatrix = mMatrix)
+                    v2 = self.vertexShader(v2, modelMatrix = mMatrix)
                     if vertCount == 4:
-                        v3=self.vertexShader(v3, modelMatrix=mMatrix)
+                        v3 = self.vertexShader(v3, modelMatrix=mMatrix)
                 
                 transformedVerts.append(v0)
                 transformedVerts.append(v1)
@@ -285,11 +285,11 @@ class Renderer(object):
                     transformedVerts.append(v2)
                     transformedVerts.append(v3)
 
-                vt0=model.texcoords[face[0][1] -1]
-                vt1=model.texcoords[face[1][1] -1]
-                vt2=model.texcoords[face[2][1] -1]
+                vt0 = model.texcoords[face[0][1] - 1]
+                vt1 = model.texcoords[face[1][1] - 1]
+                vt2 = model.texcoords[face[2][1] - 1]
                 if vertCount == 4:
-                    vt3=model.texcoords[face[3][1] -1]
+                    vt3 = model.texcoords[face[3][1] - 1]
 
                 texCoords.append(vt0)
                 texCoords.append(vt1)

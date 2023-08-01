@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 31.07.2023
+              Modificado el 01.08.2023
  '''
 
 def nMatProduct(matArray):
@@ -19,10 +19,7 @@ def nMatProduct(matArray):
     return result
 
 def twoMatProduct(A, B):
-    result = [[0,0,0,0],
-           [0,0,0,0],
-           [0,0,0,0],
-           [0,0,0,0]]
+    result = [[0 for row in range(4)] for col in range(4)]
     
     for x in range(4):
         for y in range(4):
@@ -32,7 +29,7 @@ def twoMatProduct(A, B):
     return result
 
 def vecMatProduct(M, V):
-    result = [0 for _ in range(len(M))]
+    result = [0 for row in range(len(M))]
     
     for i in range(len(M)):
         for j in range(len(V)):
@@ -51,4 +48,4 @@ def getBarycentricCoordinates(A, B, C, P):
         w = 1 - u - v
         return u, v, w
     except:
-        return -1,-1,-1
+        return -1, -1, -1
