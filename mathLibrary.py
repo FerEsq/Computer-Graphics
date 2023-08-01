@@ -15,20 +15,20 @@ def nMatProduct(matArray):
     
     for mat in matArray:
         result = twoMatProduct(result, mat)
+    
+    return result
 
 def twoMatProduct(A, B):
-    rA = len(A) #Filas de A
-    cA = len(A[0]) #Columnas de A
-    rB = len(B) #Filas de B
-    cB = len(B[0]) #Columnas de B
-
-    result = [[0 for row in range(cB)] for col in range(rA)]
-
-    for s in range(rA):
-        for j in range(cB):
-            for k in range(cA):
-                result[s][j] += A[s][k] * B[k][j]
-
+    result = [[0,0,0,0],
+           [0,0,0,0],
+           [0,0,0,0],
+           [0,0,0,0]]
+    
+    for x in range(4):
+        for y in range(4):
+            for i in range(4):
+                result[x][y] += A[x][i] * B[i][y]
+                
     return result
 
 def vecMatProduct(M, V):

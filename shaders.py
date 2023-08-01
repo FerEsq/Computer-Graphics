@@ -7,22 +7,18 @@
               Modificado el 31.07.2023
  '''
 
-from mathLibrary import twoMatMult
+from mathLibrary import vecMatProduct
 
 def vertexShader(vertex, **kwargs):
-    modelMatrix = kwargs['modelMatrix']
-
-    transformedVertex = [[vertex[0]], 
-                         [vertex[1]], 
-                         [vertex[2]], 
-                         [1] ]
-
-    transformedVertex = twoMatMult(modelMatrix, transformedVertex)
-
-    transformedVertex = [transformedVertex[0][0] / transformedVertex[3][0], 
-                        transformedVertex[1][0] / transformedVertex[3][0], 
-                        transformedVertex[2][0] / transformedVertex[3][0]]
-
+    modelMatrix = kwargs["modelMatrix"]
+    transformedVertex = [vertex[0],
+          vertex[1],
+          vertex[2],
+          1]
+    transformedVertex = vecMatProduct(modelMatrix,transformedVertex)
+    transformedVertex = [transformedVertex[0]/transformedVertex[3], 
+          transformedVertex[1]/transformedVertex[3], 
+          transformedVertex[2]/transformedVertex[3]]
     return transformedVertex
 
 def fragmentShader(**kwargs):

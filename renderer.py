@@ -11,23 +11,24 @@ import shaders
 
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 print("Bienvenido al renderizador de archivos .obj")
-print("Las medidas recomendadas son: \n- Ancho: 3500 \n- Altura: 3500")
-print("Archivo de entrada: 'kirby.obj'")
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 
-width = 3500
-height = 3500
-inputFile = "kirby.obj"
-exitFile = "salida.bmp"
+width = 1500
+height = 1500
+modelFile = "bb8.obj"
+textureFile = "texture.bmp"
+exitFile = "output.bmp"
 
 rend = Renderer(width, height)
 
 rend.vertexShader = shaders.vertexShader
 rend.fragmentShader = shaders.fragmentShader
 
-rend.glLoadModel(inputFile, 
-                 translate=(-width*6.47, height/6, 0), 
-                 scale=(5000,5000,5000))
+rend.glLoadModel(filename = modelFile, 
+                 textureName = textureFile, 
+                 translate=(width-(width/4), height/32, 0), 
+                 scale=(23,23,23), 
+                 rotate=(-90,0,90))
 
 rend.glRender()
 
