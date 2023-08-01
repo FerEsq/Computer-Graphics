@@ -12,6 +12,7 @@ import shaders
 import numpy as np
 from obj import Obj
 from matrix import multiplication
+from texture import Texture
 
 V2 = namedtuple('Point2', ['x', 'y'])
 V3 = namedtuple('Point2', ['x', 'y', 'z'])
@@ -51,6 +52,9 @@ class Model(object):
         self.translate = translate
         self.rotate = rotate
         self.scale = scale
+
+    def loadTexture(self, textureName):
+        self.texture = Texture(textureName)
 
 class Renderer(object):
     def __init__(self, width, height):
@@ -210,6 +214,12 @@ class Renderer(object):
                     transformedVerts.append(v0)
                     transformedVerts.append(v2)
                     transformedVerts.append(v3)
+
+                vt0 = model.texcoords[face[0][1] - 1]
+                vt1 = model.texcoords[face[1][1] - 1]
+                vt2 = model.texcoords[face[2][1] - 1]
+                if vertCount == 4:
+                    vt3 = model.texcoords[face[3][1] - 1]
 
         primitives = self.glPrimitiveAssembly(transformedVerts)
 
