@@ -4,6 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
+              Modificado el 31.07.2023
  '''
 
 class Obj(object):
@@ -23,13 +24,19 @@ class Obj(object):
                 continue
 
             if prefix == "v": #Vertices
-                self.vertices.append(list(map(float, value.split(" "))))
+                tempVerts = value.split(" ")
+                if tempVerts[0] == '':
+                    emptyVert = tempVerts.pop(0)
+                self.vertices.append(list(map(float, tempVerts)))
             elif prefix == "vt": #Texture coordinates
                 self.texcoords.append(list(map(float, value.split(" "))))
             elif prefix == "vn": #Normals
                 self.normals.append(list(map(float, value.split(" "))))
-            elif prefix == "f": #Face
+            elif prefix == "f": #Faces
+                tempFaces = value.split(" ")
+                if tempFaces[len(tempFaces)-1] == '':
+                    emptyFace = tempFaces.pop()
                 if "//" in value:
-                    self.faces.append([list(map(int, vert.split("//"))) for vert in value.split(" ")])
+                    self.faces.append([list(map(int, vert.split("//"))) for vert in tempFaces])
                 else:
-                    self.faces.append([list(map(int, vert.split("/"))) for vert in value.split(" ")])
+                    self.faces.append([list(map(int, vert.split("/"))) for vert in tempFaces])

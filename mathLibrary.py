@@ -4,9 +4,19 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
+              Modificado el 31.07.2023
  '''
 
-def multiplication(A, B):
+def nMatProduct(matArray):
+    result = [[1,0,0,0],
+             [0,1,0,0],
+             [0,0,1,0],
+             [0,0,0,1]]
+    
+    for mat in matArray:
+        result = twoMatProduct(result, mat)
+
+def twoMatProduct(A, B):
     rA = len(A) #Filas de A
     cA = len(A[0]) #Columnas de A
     rB = len(B) #Filas de B
@@ -21,7 +31,7 @@ def multiplication(A, B):
 
     return result
 
-def multiplicationVector(M, V):
+def vecMatProduct(M, V):
     result = [0 for _ in range(len(M))]
     
     for i in range(len(M)):
@@ -35,8 +45,10 @@ def getBarycentricCoordinates(A, B, C, P):
     acpArea = (C[1] - A[1]) * (P[0] - C[0]) + (A[0] - C[0]) * (P[1] - C[1])
     abcArea = (B[1] - C[1]) * (A[0] - C[0]) + (C[0] - B[0]) * (A[1] - C[1])
     
-    u = pcbArea / abcArea
-    v = acpArea / abcArea
-    w = 1 - u - v
-
-    return u, v, w
+    try:
+        u = pcbArea / abcArea
+        v = acpArea / abcArea
+        w = 1 - u - v
+        return u, v, w
+    except:
+        return -1,-1,-1

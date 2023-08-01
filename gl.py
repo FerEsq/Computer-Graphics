@@ -9,9 +9,8 @@
 import struct
 from collections import namedtuple
 import shaders
-import numpy as np
 from obj import Obj
-from matrix import multiplication
+from mathLibrary import twoMatMult
 from texture import Texture
 
 V2 = namedtuple('Point2', ['x', 'y'])
@@ -121,7 +120,7 @@ class Renderer(object):
                     [0, 0, scale[2], 0],
                     [0, 0, 0, 1]]
         
-        result = multiplication(translateMat, scaleMat)
+        result = twoMatMult(translateMat, scaleMat)
         return result
             
     def glLine(self, v0, v1, clr = None):

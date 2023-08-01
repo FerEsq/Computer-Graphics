@@ -4,9 +4,10 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
+              Modificado el 31.07.2023
  '''
 
-from matrix import multiplication
+from mathLibrary import twoMatMult
 
 def vertexShader(vertex, **kwargs):
     modelMatrix = kwargs['modelMatrix']
@@ -16,7 +17,7 @@ def vertexShader(vertex, **kwargs):
                          [vertex[2]], 
                          [1] ]
 
-    transformedVertex = multiplication(modelMatrix, transformedVertex)
+    transformedVertex = twoMatMult(modelMatrix, transformedVertex)
 
     transformedVertex = [transformedVertex[0][0] / transformedVertex[3][0], 
                         transformedVertex[1][0] / transformedVertex[3][0], 
@@ -25,5 +26,10 @@ def vertexShader(vertex, **kwargs):
     return transformedVertex
 
 def fragmentShader(**kwargs):
-    color = (1,1,1)
-    return color
+      texCoords = kwargs["texCoords"]
+      texture = kwargs["texture"]
+      if texture != None:
+            color = texture.getColor(texCoords[0], texCoords[1])
+      else:
+            color = (1,1,1)
+      return color
