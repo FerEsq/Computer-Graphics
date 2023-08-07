@@ -7,17 +7,18 @@
               Modificado el 31.07.2023
  '''
 
-from gl import Renderer, V2, V3, color
+from gl import Renderer
 import shaders
 
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 print("Bienvenido al renderizador de archivos .obj")
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-width = 3800
-height = 3800
-modelFile = "dog.obj"
-textureFile = "texture.bmp"
+width = 600
+height = 600
+
+modelFile = "models/dice.obj"
+textureFile = "textures/dice.bmp"
 exitFile = "output.bmp"
 
 rend = Renderer(width, height)
@@ -25,29 +26,13 @@ rend = Renderer(width, height)
 rend.vertexShader = shaders.vertexShader
 rend.fragmentShader = shaders.fragmentShader
 
-rend.glLoadModel(filename = modelFile, 
-                 textureName = textureFile, 
-                 translate=(width/4, height/1.5, 0), 
-                 scale=(1200,1200,1200), 
-                 rotate=(0,0,0))
+rend.glLookAt(camPos = (-3,-3,-2), eyePos= (0,0,-5))
 
-rend.glLoadModel(filename = modelFile, 
-                 textureName = textureFile, 
-                 translate=(width-(width/4), height/1.5, 0), 
-                 scale=(1200,1200,1200),  
-                 rotate=(0,90,0))
-
-rend.glLoadModel(filename = modelFile, 
-                 textureName = textureFile, 
-                 translate=(width/4, height/16, 0), 
-                 scale=(1200,1200,1200), 
-                 rotate=(0,180,0))
-
-rend.glLoadModel(filename = modelFile, 
-                 textureName = textureFile, 
-                 translate=(width-(width/4), height/16, 0), 
-                 scale=(1200,1200,1200), 
-                 rotate=(0,270,0))
+rend.glLoadModel(filename = modelFile,
+                 textureName = textureFile,
+                 translate = (0, 0, -5),
+                 rotate = (0, 0, 0),
+                 scale = (4,4,4))
 
 rend.glRender()
 
