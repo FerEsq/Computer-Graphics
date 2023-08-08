@@ -1,3 +1,11 @@
+'''
+ * Nombre: renderer.py
+ * Programadora: Fernanda Esquivel (esq21542@uvg.edu.gt)
+ * Lenguaje: Python
+ * Recursos: VSCode
+ * Historial: Finalizado el 31.07.2023
+ '''
+
 import struct
 
 class Texture(object):
