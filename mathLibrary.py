@@ -4,16 +4,16 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 07.08.2023
+              Modificado el 08.08.2023
  '''
 
-from math import isclose
+from math import isclose, sqrt
 
 def nMatProduct(matArray):
     result = [[1,0,0,0],
-             [0,1,0,0],
-             [0,0,1,0],
-             [0,0,0,1]]
+              [0,1,0,0],
+              [0,0,1,0],
+              [0,0,0,1]]
     
     for mat in matArray:
         result = twoMatProduct(result, mat)
@@ -62,3 +62,56 @@ def barycentricCoords(A, B, C, P):
         return (u, v, w)
     else:
         return None
+
+def twoVecSubstraction(V1, V2):
+    result = (V1[0] - V2[0], V1[1] - V2[1], V1[2] - V2[2])
+    return result
+
+def vecNorm(V):
+    V = list(V)
+
+    m = sqrt(sum(c ** 2 for c in V))
+    
+    if m == 0:
+        return V
+    
+    result = [(c / m) for c in V]
+    result = tuple(result)
+    return result
+
+def twoVecProduct(V1, V2):
+    if len(V1) != len(V2):
+        print("Los vectores deben tener la misma cantidad de componentes")
+    
+    x1, y1, z1 = V1
+    x2, y2, z2 = V2
+    
+    rx = y1 * z2 - z1 * y2
+    ry = z1 * x2 - x1 * z2
+    rz = x1 * y2 - y1 * x2
+
+    result = (rx, ry, rz)
+    return result
+
+def matInverse(M):
+    n = len(M)
+    result = [[1,0,0,0],
+              [0,1,0,0],
+              [0,0,1,0],
+              [0,0,0,1]]
+    
+    for i in range(n):
+        pivot = M[i][i]
+        for j in range(n):
+            M[i][j] /= pivot
+            result[i][j] /= pivot
+        
+        # Restar la fila i de las otras filas para hacer ceros por encima y por debajo del elemento diagonal
+        for k in range(n):
+            if k != i:
+                factor = M[k][i]
+                for j in range(n):
+                    M[k][j] -= factor * M[i][j]
+                    result[k][j] -= factor * result[i][j]
+    
+    return result

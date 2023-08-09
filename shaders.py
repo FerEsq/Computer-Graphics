@@ -4,10 +4,10 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 07.08.2023
+              Modificado el 08.08.2023
  '''
 
-from mathLibrary import vecMatProduct
+import mathLibrary as ml
 
 def vertexShader(vertex, **kwargs):
     modelMatrix = kwargs["modelMatrix"]
@@ -20,9 +20,8 @@ def vertexShader(vertex, **kwargs):
           vertex[2],
           1]
 
-    vt = vpMatrix * projectionMatrix * viewMatrix * modelMatrix @ vt
-
-    vt = vt.tolist()[0]
+    mMat = ml.nMatProduct([vpMatrix, projectionMatrix, viewMatrix, modelMatrix])
+    vt = ml.vecMatProduct(mMat, vt)
 
     vt = [vt[0]/vt[3],
           vt[1]/vt[3],

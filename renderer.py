@@ -19,7 +19,7 @@ height = 600
 
 modelFile = "models/dice.obj"
 textureFile = "textures/dice.bmp"
-exitFile = "output.bmp"
+exitFile = "test.bmp"
 
 rend = Renderer(width, height)
 

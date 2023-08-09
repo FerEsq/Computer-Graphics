@@ -4,11 +4,11 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 07.08.2023
+              Modificado el 08.08.2023
  '''
 
 import struct
-import numpy as np
+import mathLibrary as ml
 from math import pi, sin, cos, tan
 from obj import Obj
 from texture import Texture
@@ -86,31 +86,31 @@ class Renderer(object):
 
 
     def glColor(self, r, g, b):
-        # Establecer el color default de rederizaci�n.
+        # Establecer el color default de rederización.
         self.currColor = color(r,g,b)
 
 
     def glClear(self):
-        # Se crea la tabla de pixeles del tama�o width*height.
+        # Se crea la tabla de pixeles del tamaño width*height.
         # Se le asigna a cada pixel el color de fondo.
         self.pixels = [[self.clearColor for y in range(self.height)]
                        for x in range(self.width)]
 
-        # Se crea otra tabla para el Z Buffer. Aqu� se guarda la profundidad
-        # de cada pixel, con el valor m�ximo de profundidad inicial.
+        # Se crea otra tabla para el Z Buffer. Aquí se guarda la profundidad
+        # de cada pixel, con el valor máximo de profundidad inicial.
         self.zbuffer = [[float('inf') for y in range(self.height)]
                        for x in range(self.width)]
 
 
     def glPoint(self, x, y, clr = None):
-        # Si el valor de X y Y est� dentro del ancho y alto del framebuffer,
-        # dibujar el punto en la posici�n (x,y) del FrameBuffer.
+        # Si el valor de X y Y está dentro del ancho y alto del framebuffer,
+        # dibujar el punto en la posición (x,y) del FrameBuffer.
         if (0 <= x < self.width) and (0 <= y < self.height):
             self.pixels[x][y] = clr or self.currColor
 
 
     def glTriangle(self, A, B, C, vtA, vtB, vtC):
-        # Rederizaci�n de un tri�ngulo usando coordenadas baric�ntricas.
+        # Rederización de un triángulo usando coordenadas baricéntricas.
         # Se reciben los vertices A, B y C y las coordenadas de
         # textura vtA, vtB y vtC
 
@@ -123,18 +123,18 @@ class Renderer(object):
         # Para cada pixel dentro del bounding box
         for x in range(minX, maxX + 1):
             for y in range(minY, maxY + 1):
-                # Si el pixel est� dentro del FrameBuffer
+                # Si el pixel está dentro del FrameBuffer
                 if (0 <= x < self.width) and (0 <= y < self.height):
 
                     P = (x,y)
                     bCoords = barycentricCoords(A, B, C, P)
 
-                    # Si se obtienen coordenadas baric�ntricas v�lidas para este punto
+                    # Si se obtienen coordenadas baricéntricas válidas para este punto
                     if bCoords != None:
 
                         u, v, w = bCoords
 
-                        # Se calcula el valor Z para este punto usando las coordenadas baric�ntricas
+                        # Se calcula el valor Z para este punto usando las coordenadas baricéntricas
                         z = u * A[2] + v * B[2] + w * C[2]
 
                         # Si el valor de Z para este punto es menor que el valor guardado en el Z Buffer
@@ -143,14 +143,14 @@ class Renderer(object):
                             # Guardamos este valor de Z en el Z Buffer
                             self.zbuffer[x][y] = z
 
-                            # Calcular las UVs del pixel usando las coordenadas baric�ntricas.
+                            # Calcular las UVs del pixel usando las coordenadas baricéntricas.
                             uvs = (u * vtA[0] + v * vtB[0] + w * vtC[0],
                                    u * vtA[1] + v * vtB[1] + w * vtC[1])
 
-                            # Si contamos un Fragment Shader, obtener el color de ah�.
+                            # Si contamos un Fragment Shader, obtener el color de ahí.
                             # Sino, usar el color preestablecido.
                             if self.fragmentShader != None:
-                                # Mandar los par�metros necesarios al shader
+                                # Mandar los parámetros necesarios al shader
                                 colorP = self.fragmentShader(texCoords = uvs,
                                                              texture = self.activeTexture)
 
@@ -162,14 +162,14 @@ class Renderer(object):
 
     def glPrimitiveAssembly(self, tVerts, tTexCoords):
 
-        # Esta funci�n construye las primitivas de acuerdo con la
-        # opci�n de primitiva actual. De momento solo hay para tri�ngulos
+        # Esta función construye las primitivas de acuerdo con la
+        # opción de primitiva actual. De momento solo hay para triángulos
 
         primitives = [ ]
 
         if self.primitiveType == TRIANGLES:
             for i in range(0, len(tVerts), 3):
-                # Un tri�ngulo contar� con las posiciones de sus v�rtices y
+                # Un tri+angulo contará con las posiciones de sus vértices y
                 # y sus UVs, seguidos uno tras otro.
 
                 triangle = [ ]
@@ -194,36 +194,31 @@ class Renderer(object):
         self.vpWidth = width
         self.vpHeight = height
         
-        self.vpMatrix = np.matrix([[self.vpWidth/2,0,0,self.vpX+self.vpWidth/2],
-                                   [0,self.vpHeight/2,0,self.vpY+self.vpHeight/2],
-                                   [0,0,0.5,0.5],
-                                   [0,0,0,1]])
+        self.vpMatrix = [[self.vpWidth/2,0,0,self.vpX+self.vpWidth/2],
+                        [0,self.vpHeight/2,0,self.vpY+self.vpHeight/2],
+                        [0,0,0.5,0.5],
+                        [0,0,0,1]]
 
     def glCamMatrix(self, translate = (0,0,0), rotate = (0,0,0)):
         #Crea matrix de camara
         self.camMatrix = self.glModelMatrix(translate, rotate)
         
         #Matriz de vista es igual a la inversa de la camara
-        self.viewMatrix = np.linalg.inv(self.camMatrix)
+        self.viewMatrix = ml.matInverse(self.camMatrix)
           
     def glLookAt(self, camPos = (0,0,0), eyePos = (0,0,0)):
         worldUp = (0,1,0)
         
-        forward = np.subtract(camPos, eyePos)
-        forward = forward / np.linalg.norm(forward)
+        forward = ml.vecNorm(ml.twoVecSubstraction(camPos, eyePos))
+        right = ml.vecNorm(ml.twoVecProduct(worldUp, forward))
+        up = ml.vecNorm(ml.twoVecProduct(forward, right))
         
-        right = np.cross(worldUp, forward)
-        right = right / np.linalg.norm(right)
+        self.camMatrix = [[right[0],up[0],forward[0],camPos[0]],
+                          [right[1],up[1],forward[1],camPos[1]],
+                          [right[2],up[2],forward[2],camPos[2]],
+                          [0,0,0,1]]
         
-        up = np.cross(forward, right)
-        up = up/np.linalg.norm(up)
-        
-        self.camMatrix = np.matrix([[right[0],up[0],forward[0],camPos[0]],
-                                    [right[1],up[1],forward[1],camPos[1]],
-                                    [right[2],up[2],forward[2],camPos[2]],
-                                    [0,0,0,1]])
-        
-        self.viewMatrix = np.linalg.inv(self.camMatrix)
+        self.viewMatrix = ml.matInverse(self.camMatrix)
         
     def glProjectionMatrix(self, fov = 60, n = 0.1, f = 1000):
         aspectRatio = self.vpWidth/self.vpHeight
@@ -232,59 +227,55 @@ class Renderer(object):
         
         r = t*aspectRatio
         
-        self.projectionMatrix = np.matrix([[n/r,0,0,0],
-                                           [0,n/t,0,0],
-                                           [0,0,-(f+n)/(f-n),(-2*f*n)/(f-n)],
-                                           [0,0,-1,0]])
+        self.projectionMatrix = [[n/r,0,0,0],
+                                [0,n/t,0,0],
+                                [0,0,-(f+n)/(f-n),(-2*f*n)/(f-n)],
+                                [0,0,-1,0]]
     
     def glModelMatrix(self, translate = (0,0,0), rotate = (0,0,0), scale = (1,1,1)):
 
-        # Matriz de traslaci�n
-        translation = np.matrix([[1,0,0,translate[0]],
-                                 [0,1,0,translate[1]],
-                                 [0,0,1,translate[2]],
-                                 [0,0,0,1]])
+        # Matriz de traslación
+        translation = [ [1,0,0,translate[0]],
+                        [0,1,0,translate[1]],
+                        [0,0,1,translate[2]],
+                        [0,0,0,1] ]
 
-        # Matrix de rotaci�n
+        # Matrix de rotación
         rotMat = self.glRotationMatrix(rotate[0], rotate[1], rotate[2])
 
         # Matriz de escala
-        scaleMat = np.matrix([[scale[0],0,0,0],
-                              [0,scale[1],0,0],
-                              [0,0,scale[2],0],
-                              [0,0,0,1]])
+        scaleMat = [[scale[0],0,0,0],
+                    [0,scale[1],0,0],
+                    [0,0,scale[2],0],
+                    [0,0,0,1]]
         
         # Se multiplican las tres para obtener la matriz del objeto final
-        return translation * rotMat * scaleMat
-
+        return ml.nMatProduct([translation, rotMat, scaleMat])
 
     def glRotationMatrix(self, pitch = 0, yaw = 0, roll = 0):
-
         # Convertir a radianes
         pitch *= pi/180
         yaw *= pi/180
         roll *= pi/180
 
-        # Creamos la matriz de rotaci�n para cada eje.
-        pitchMat = np.matrix([[1,0,0,0],
-                              [0,cos(pitch),-sin(pitch),0],
-                              [0,sin(pitch),cos(pitch),0],
-                              [0,0,0,1]])
+        # Creamos la matriz de rotación para cada eje.
+        pitchMat = [[1,0,0,0],
+                    [0,cos(pitch),-sin(pitch),0],
+                    [0,sin(pitch),cos(pitch),0],
+                    [0,0,0,1]]
 
-        yawMat = np.matrix([[cos(yaw),0,sin(yaw),0],
-                            [0,1,0,0],
-                            [-sin(yaw),0,cos(yaw),0],
-                            [0,0,0,1]])
+        yawMat = [ [cos(yaw),0,sin(yaw),0],
+                    [0,1,0,0],
+                    [-sin(yaw),0,cos(yaw),0],
+                    [0,0,0,1] ]
 
-        rollMat = np.matrix([[cos(roll),-sin(roll),0,0],
-                             [sin(roll),cos(roll),0,0],
-                             [0,0,1,0],
-                             [0,0,0,1]])
+        rollMat = [ [cos(roll),-sin(roll),0,0],
+                    [sin(roll),cos(roll),0,0],
+                    [0,0,1,0],
+                    [0,0,0,1] ]
 
-        # Se multiplican las tres matrices para obtener la matriz de rotaci�n final
-        return pitchMat * yawMat * rollMat
-
-
+        # Se multiplican las tres matrices para obtener la matriz de rotación final
+        return ml.nMatProduct([pitchMat, yawMat, rollMat])
 
     def glLine(self, v0, v1, clr = None):
         # Bresenham line algorith
@@ -358,7 +349,7 @@ class Renderer(object):
 
     def glRender(self):
         
-        # Esta funci�n est� encargada de renderizar todo a la tabla de pixeles
+        # Esta función está encargada de renderizar todo a la tabla de pixeles
 
         transformedVerts = []
         texCoords = []
@@ -372,18 +363,18 @@ class Renderer(object):
 
             # Para cada cara del modelo
             for face in model.faces:
-                # Revisamos cuantos v�rtices tiene esta cara. Si tiene cuatro
-                # v�rtices, hay que crear un segundo tri�ngulo por cara
+                # Revisamos cuantos vértices tiene esta cara. Si tiene cuatro
+                # vértices, hay que crear un segundo triángulo por cara
                 vertCount = len(face)
 
-                # Obtenemos los v�rtices de la cara actual.
+                # Obtenemos los vértices de la cara actual.
                 v0 = model.vertices[ face[0][0] - 1]
                 v1 = model.vertices[ face[1][0] - 1]
                 v2 = model.vertices[ face[2][0] - 1]
                 if vertCount == 4:
                     v3 = model.vertices[ face[3][0] - 1]
 
-                # Si contamos con un Vertex Shader, se manda cada v�rtice 
+                # Si contamos con un Vertex Shader, se manda cada vértice 
                 # al mismo para transformarlos. Recordar pasar las matrices
                 # necesarias para usarlas dentro del shader.
                 if self.vertexShader:
@@ -409,7 +400,7 @@ class Renderer(object):
                                            projectionMatrix = self.projectionMatrix,
                                            vpMatrix = self.vpMatrix)
                 
-                # Agregar cada v�rtice transformado al listado de v�rtices.
+                # Agregar cada vértice transformado al listado de vértices.
                 transformedVerts.append(v0)
                 transformedVerts.append(v1)
                 transformedVerts.append(v2)
@@ -446,8 +437,8 @@ class Renderer(object):
 
 
     def glFinish(self, filename):
-        # Esta funci�n crea una textura BMP de 24 bits y la rellena 
-        # con la tabla de pixeles. Este ser� nuestro FrameBuffer final.
+        # Esta función crea una textura BMP de 24 bits y la rellena 
+        # con la tabla de pixeles. Este será nuestro FrameBuffer final.
 
         with open(filename, "wb") as file:
             # Header
