@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 08.08.2023
+              Modificado el 09.08.2023
  '''
 
 from math import isclose, sqrt
@@ -105,8 +105,7 @@ def matInverse(M):
         for j in range(n):
             M[i][j] /= pivot
             result[i][j] /= pivot
-        
-        # Restar la fila i de las otras filas para hacer ceros por encima y por debajo del elemento diagonal
+
         for k in range(n):
             if k != i:
                 factor = M[k][i]
