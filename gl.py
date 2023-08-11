@@ -14,6 +14,8 @@ from obj import Obj
 from texture import Texture
 from mathLibrary import barycentricCoords
 
+import numpy as np
+
 POINTS = 0
 LINES = 1
 TRIANGLES = 2
@@ -70,6 +72,7 @@ class Renderer(object):
 
         self.vertexShader = None
         self.fragmentShader = None
+        self.flatShader = None
 
         self.primitiveType = TRIANGLES
 
@@ -79,6 +82,7 @@ class Renderer(object):
         self.glCamMatrix()
         self.glProjectionMatrix()
 
+        self.directionalLight = (1,0,0)
     
     def glClearColor(self, r, g, b):
         # Establecer el color de fondo
@@ -109,7 +113,7 @@ class Renderer(object):
             self.pixels[x][y] = clr or self.currColor
 
 
-    def glTriangle(self, A, B, C, vtA, vtB, vtC):
+    def glTriangle(self, A, B, C, vtA, vtB, vtC, triangleNormal):
         # Rederización de un triángulo usando coordenadas baricéntricas.
         # Se reciben los vertices A, B y C y las coordenadas de
         # textura vtA, vtB y vtC
@@ -151,8 +155,11 @@ class Renderer(object):
                             # Sino, usar el color preestablecido.
                             if self.fragmentShader != None:
                                 # Mandar los parámetros necesarios al shader
+
                                 colorP = self.fragmentShader(texCoords = uvs,
-                                                             texture = self.activeTexture)
+                                                             texture = self.activeTexture,
+                                                             triangleNormal = triangleNormal,
+                                                             dLight = self.directionalLight)
 
                                 self.glPoint(x, y, color(colorP[0], colorP[1], colorP[2]))
                                 
@@ -160,7 +167,7 @@ class Renderer(object):
                                 self.glPoint(x, y)
 
 
-    def glPrimitiveAssembly(self, tVerts, tTexCoords):
+    def glPrimitiveAssembly(self, tVerts, tTexCoords, normals):
 
         # Esta función construye las primitivas de acuerdo con la
         # opción de primitiva actual. De momento solo hay para triángulos
@@ -182,6 +189,9 @@ class Renderer(object):
                 triangle.append( tTexCoords[i] )
                 triangle.append( tTexCoords[i + 1] )
                 triangle.append( tTexCoords[i + 2] )
+
+                # Normals
+                triangle.append(normals[int(i/3)])
 
                 primitives.append(triangle)
 
@@ -353,6 +363,7 @@ class Renderer(object):
 
         transformedVerts = []
         texCoords = []
+        normals = []
 
         # Para cada modelo en nuestro listado de objetos
         for model in self.objects:
@@ -373,6 +384,14 @@ class Renderer(object):
                 v2 = model.vertices[ face[2][0] - 1]
                 if vertCount == 4:
                     v3 = model.vertices[ face[3][0] - 1]
+
+                triangleNormal0 = np.cross(np.subtract(v1, v0), np.subtract(v2, v0))
+                triangleNormal0 = triangleNormal0 / np.linalg.norm(triangleNormal0)
+                normals.append(triangleNormal0)
+                if vertCount == 4:
+                    triangleNormal1 = np.cross(np.subtract(v2, v0), np.subtract(v3, v0))
+                    triangleNormal1 = triangleNormal1 / np.linalg.norm(triangleNormal1)
+                    normals.append(triangleNormal1)
 
                 # Si contamos con un Vertex Shader, se manda cada vértice 
                 # al mismo para transformarlos. Recordar pasar las matrices
@@ -426,13 +445,14 @@ class Renderer(object):
                     texCoords.append(vt3)
 
         # Creamos las primitivas
-        primitives = self.glPrimitiveAssembly(transformedVerts, texCoords)       
+        primitives = self.glPrimitiveAssembly(transformedVerts, texCoords, normals)       
 
         # Para cada primitiva
         for prim in primitives:
             if self.primitiveType ==  TRIANGLES:
                 self.glTriangle(prim[0], prim[1], prim[2],
-                                prim[3], prim[4], prim[5])
+                                prim[3], prim[4], prim[5],
+                                prim[6])
         
 
 
