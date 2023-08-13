@@ -79,7 +79,7 @@ def vecNorm(V):
     result = tuple(result)
     return result
 
-def twoVecProduct(V1, V2):
+def twoVecCross(V1, V2):
     if len(V1) != len(V2):
         print("Los vectores deben tener la misma cantidad de componentes")
     
@@ -112,5 +112,14 @@ def matInverse(M):
                 for j in range(n):
                     M[k][j] -= factor * M[i][j]
                     result[k][j] -= factor * result[i][j]
+    
+    return result
+
+
+def twoVecDot(V1, V2):
+    if len(V1) != 3 or len(V2) != 3:
+        raise ValueError("Los vectores deben tener tres componentes cada uno.")
+    
+    result = sum(component1 * component2 for component1, component2 in zip(V1, V2))
     
     return result

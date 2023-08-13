@@ -4,17 +4,14 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 08.08.2023
+              Modificado el 12.08.2023
  '''
 
 import struct
 import mathLibrary as ml
-from math import pi, sin, cos, tan, radians
+from math import sin, cos, tan, radians
 from obj import Obj
 from texture import Texture
-from mathLibrary import barycentricCoords
-
-import numpy as np
 
 POINTS = 0
 LINES = 1
@@ -59,7 +56,7 @@ class Renderer(object):
         self.width = width
         self.height = height
 
-        self.glClearColor(0.5,0.5,0.5)
+        self.glClearColor(0,0,0)
         self.glClear()
         self.glColor(1,1,1)
 
@@ -76,7 +73,7 @@ class Renderer(object):
         self.glCameraMatrix()
         self.glProjectionMatrix()
 
-        self.directionalLight = (1,0,0)
+        self.directionalLight = (0,0,1)
         
 
     def glAddVertices(self, vertices):
@@ -128,7 +125,7 @@ class Renderer(object):
         if (0 <= x < self.width) and (0 <= y < self.height):
             self.pixels[x][y]=clr or self.currColor
 
-    def glTriangle_bc(self, verts, texCoords, normals):
+    def glTriangle(self, verts, texCoords, normals):
         A= verts[0]
         B= verts[1]
         C= verts[2]
@@ -170,12 +167,6 @@ class Renderer(object):
                             else:
                                 self.glPoint(x,y,colorP)
 
-                            
-
-    def glTriangle(self, v0, v1, v2, clr= None):
-        self.glLine(v0,v1,clr or self.currColor)
-        self.glLine(v1,v2,clr or self.currColor)
-        self.glLine(v2,v0,clr or self.currColor)
 
     def glViewport(self, x,y,width,height):
         self.vpX = x
@@ -194,8 +185,8 @@ class Renderer(object):
 
     def glLookAt(self, camPos = (0,0,0), eyePos=(0,0,0)):
         forward = ml.vecNorm(ml.twoVecSubstraction(camPos, eyePos))
-        right = ml.vecNorm(ml.twoVecProduct((0,1,0), forward))
-        up = ml.vecNorm(ml.twoVecProduct(forward, right))
+        right = ml.vecNorm(ml.twoVecCross((0,1,0), forward))
+        up = ml.vecNorm(ml.twoVecCross(forward, right))
 
         self.camMatrix = [[right[0],up[0],forward[0],camPos[0]],
                           [right[1],up[1],forward[1],camPos[1]],
@@ -214,10 +205,12 @@ class Renderer(object):
                                  [0,0,-1,0]]
 
     def glModelMatrix(self, translate=(0,0,0), rotate=(0,0,0), scale=(1,1,1)):
+        
         translateMat = [[1,0,0,translate[0]],
                         [0,1,0,translate[1]],
                         [0,0,1,translate[2]],
                         [0,0,0,1]]
+        
         scaleMat = [[scale[0],0,0,0],
                     [0,scale[1],0,0],
                     [0,0,scale[2],0],
@@ -275,7 +268,6 @@ class Renderer(object):
         dy = abs(y1-y0)
         dx = abs(x1-x0)
 
-
         offset=0
         limit=0.5
         m = dy/dx
@@ -330,11 +322,13 @@ class Renderer(object):
                                          viewMatrix=self.viewMatrix,
                                          projectionMatrix=self.projectionMatrix,
                                          vpMatrix=self.vpMatrix)
+                    
                     v1=self.vertexShader(v1, 
                                          modelMatrix=mMatrix,
                                          viewMatrix=self.viewMatrix,
                                          projectionMatrix=self.projectionMatrix,
                                          vpMatrix=self.vpMatrix)
+                    
                     v2=self.vertexShader(v2, 
                                          modelMatrix=mMatrix,
                                          viewMatrix=self.viewMatrix,
@@ -350,6 +344,7 @@ class Renderer(object):
                 transformedVerts.append(v0)
                 transformedVerts.append(v1)
                 transformedVerts.append(v2)
+
                 if vertCount == 4:
                     transformedVerts.append(v0)
                     transformedVerts.append(v2)
@@ -358,12 +353,14 @@ class Renderer(object):
                 vt0=model.texcoords[face[0][1] -1]
                 vt1=model.texcoords[face[1][1] -1]
                 vt2=model.texcoords[face[2][1] -1]
+
                 if vertCount == 4:
                     vt3=model.texcoords[face[3][1] -1]
 
                 texCoords.append(vt0)
                 texCoords.append(vt1)
                 texCoords.append(vt2)
+
                 if vertCount == 4:
                     texCoords.append(vt0)
                     texCoords.append(vt2)
@@ -373,12 +370,14 @@ class Renderer(object):
                 vn0=model.normals[face[0][2] -1]
                 vn1=model.normals[face[1][2] -1]
                 vn2=model.normals[face[2][2] -1]
+
                 if vertCount == 4:
                     vn3=model.normals[face[3][2] -1]
 
                 normals.append(vn0)
                 normals.append(vn1)
                 normals.append(vn2)
+
                 if vertCount == 4:
                     normals.append(vn0)
                     normals.append(vn2)
@@ -388,7 +387,7 @@ class Renderer(object):
 
         for prim in primitives:
             if self.primitiveType == TRIANGLES:
-                self.glTriangle_bc(prim[0], prim[1], prim[2])
+                self.glTriangle(prim[0], prim[1], prim[2])
 
     def glFinish(self, filename):
         with open(filename, "wb") as file:
