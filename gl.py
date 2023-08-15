@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 12.08.2023
+              Modificado el 14.08.2023
  '''
 
 import struct
@@ -73,7 +73,7 @@ class Renderer(object):
         self.glCameraMatrix()
         self.glProjectionMatrix()
 
-        self.directionalLight = (0,0,1)
+        self.directionalLight = (0,0,-1)
         
 
     def glAddVertices(self, vertices):

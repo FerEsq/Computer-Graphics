@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 12.08.2023
+              Modificado el 14.08.2023
  '''
 
 from gl import Renderer
@@ -19,12 +19,16 @@ height = 720
 
 modelFile = "models/koala.obj"
 textureFile = "textures/koala.bmp"
-exitFile = "shaders/koala3.bmp"
+exitFile = "shaders/shader3.bmp"
 
 rend = Renderer(width, height)
 
 rend.vertexShader = shaders.vertexShader
-rend.fragmentShader = shaders.pixelArtShader
+rend.fragmentShader = shaders.outlineShader
+
+#difused -> dLight = (0,0,-1)
+#satured -> dLight = (0,0,1)
+#outline -> dLight = (0,0,-1)
         
 rend.glLoadModel(filename = modelFile,
                  textureName = textureFile,
