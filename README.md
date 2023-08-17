@@ -29,3 +29,6 @@ Branch para el laboratorio 2 del curso.
     rend.fragmentShader = shaders.outlineShader
     directionalLight = (0,0,-1)
   ```
+
+## Documentación
+  Puede encontrar las conversaciones con ChatGPT que se llevaron a cabo para realizar este laboratorio en este [archivo.](IA.pdf)
