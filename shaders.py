@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 14.08.2023
+              Modificado el 16.08.2023
  '''
 
 import mathLibrary as ml
@@ -260,8 +260,8 @@ def outlineShader(**kwargs):
     outlineColor = (0.3, 0.7, 0.8)  #Color aqua
     interiorColor = textureColor if texture != None else (1.0, 1.0, 1.0)
 
-    threshold = 0.5
-    falloff = 0.2 
+    threshold = 0.5 #Umbral de intensidad para resaltar el contorno
+    falloff = 0.2 #Factor de caída para suavizar el contorno
 
     mixFactor = exp(-(intensity - threshold) / falloff)
 
