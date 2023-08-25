@@ -56,7 +56,7 @@ class Renderer(object):
         self.width = width
         self.height = height
 
-        self.glClearColor(0,0,0)
+        self.glClearColor(0.5,0.5,0.5)
         self.glClear()
         self.glColor(1,1,1)
 
@@ -106,7 +106,21 @@ class Renderer(object):
                 primitives.append(triangle)
         
         return primitives
+    
+    def glBackgroundTexture(self, filename):
+        self.background = Texture(filename)
 
+    def clearBackground(self):
+        self.glClear()
+
+        if self.background:
+            for x in range(self.vpX, self.vpX+self.vpWidth+1):
+                for y in range(self.vpY, self.vpY+self.vpHeight+1):
+                    u=(x-self.vpX)/self.vpWidth
+                    v=(y-self.vpY)/self.vpHeight
+                    texColor = self.background.getColor(u, v)
+                    if texColor:
+                        self.glPoint(x,y,color(texColor[0],texColor[1],texColor[2]))
 
     def glClearColor(self, r, g, b):
         self.clearColor = color(r,g,b)

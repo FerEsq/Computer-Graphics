@@ -19,9 +19,13 @@ height = 720
 
 modelFile = "models/koala.obj"
 textureFile = "textures/koala.bmp"
-exitFile = "shaders/shader3.bmp"
+exitFile = "shaders/test.bmp"
 
 rend = Renderer(width, height)
+
+rend.glClearColor(0.5,0.5,0.5)
+rend.glBackgroundTexture('./backgrounds/living.bmp')
+rend.clearBackground()
 
 rend.vertexShader = shaders.vertexShader
 rend.fragmentShader = shaders.outlineShader
