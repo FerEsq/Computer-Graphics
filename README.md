@@ -1,34 +1,16 @@
-# Lab-2
-Branch para el laboratorio 2 del curso.
+# Project-1
+Branch para el proyecto 1 del curso.
 
-## Shaders
+## Modelos
 
-  ### shader1.bmp
-  Consiste en el difuminado entre tres colores (rosa, morado y celeste).
-  
-  Para implementarlo utilizar los siguientes fragmentShader y directionalLight:
-  ```bash
-    rend.fragmentShader = shaders.difusedShader
-    directionalLight = (0,0,-1)
-  ```  
+  ### chair
+  Sillón que utiliza un difusedShader, este consiste en el difuminado entre tres colores (salmón, corinto y azul).
 
-  ### shader2.bmp
-  Consiste en un shader de color verde que imita una cámara de visión nocturna.
-  
-  Para implementarlo utilizar los siguientes fragmentShader y directionalLight:
-  ```bash
-    rend.fragmentShader = shaders.saturatedShader
-    directionalLight = (0,0,1)
-  ```
+  ### table
+  Mesa de sala que utiliza un saturatedShader, este consiste en un shader de color salmón que satura la textura.
 
-  ### shader3.bmp
-  Consiste en un outline shader de color celeste.
-  
-  Para implementarlo utilizar los siguientes fragmentShader y directionalLight:
-  ```bash
-    rend.fragmentShader = shaders.outlineShader
-    directionalLight = (0,0,-1)
-  ```
+  ### plant
+  Planta (suculenta) que utiliza un outlineShader, este consiste en un sombreado delineado de color oro rosa.
 
-## Documentación
-  Puede encontrar las conversaciones con ChatGPT que se llevaron a cabo para realizar este laboratorio en este [archivo.](IA.pdf)
+  ### ducky
+  Peluche de patito que utiliza un toonShader, este consiste en un sombreado de caricatura de color salmón.
