@@ -73,7 +73,7 @@ class Renderer(object):
         self.glCameraMatrix()
         self.glProjectionMatrix()
 
-        self.directionalLight = (0,0,-1)
+        self.directionalLight = (0,0,0)
         
 
     def glAddVertices(self, vertices):
@@ -106,6 +106,9 @@ class Renderer(object):
                 primitives.append(triangle)
         
         return primitives
+    
+    def glDirectionalLight(self, dlLight):
+        self.directionalLight = dlLight
     
     def glBackgroundTexture(self, filename):
         self.background = Texture(filename)

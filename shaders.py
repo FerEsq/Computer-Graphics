@@ -8,7 +8,6 @@
  '''
 
 import mathLibrary as ml
-import numpy as np
 from math import sqrt, exp
 
 def vertexShader(vertex, **kwargs):  
@@ -143,9 +142,9 @@ def difusedShader(**kwargs):
     negativedLight = (-dLight[0], -dLight[1], -dLight[2])
     intensity = max(0, ml.twoVecDot(normal, negativedLight))
 
-    color1 = (0.5, 0.0, 1.0) #Color morado
-    color2 = (1.0, 0.6, 0.8) #Color rosa
-    color3 = (0.6, 0.8, 1.0) #Color celeste
+    color1 = ( 0.5, 0.4, 0.4 ) #Color morado
+    color2 = (0.8, 0.7, 0.6) #Color rosa
+    color3 = (0.6, 0.5, 0.4) #Color celeste
 
     intensity = min(intensity * 2, 2)
 
@@ -209,12 +208,12 @@ def saturatedShader(**kwargs):
         g += (1.0 - saturation) * textureColor[1]
         r += (1.0 - saturation) * textureColor[0]
 
-    normal = [u * nA[0] + v * nB[0] + w * nC[0],
+    normal = (u * nA[0] + v * nB[0] + w * nC[0],
               u * nA[1] + v * nB[1] + w * nC[1],
-              u * nA[2] + v * nB[2] + w * nC[2]]
-
-    dLight = np.array(dLight)
-    intensity = np.dot(normal, -dLight)
+              u * nA[2] + v * nB[2] + w * nC[2])
+    
+    negativedLight = (-dLight[0], -dLight[1], -dLight[2])
+    intensity = max(0, ml.twoVecDot(normal, negativedLight))
     
     if intensity > 0:
         b += (1.0 - saturation) * intensity
