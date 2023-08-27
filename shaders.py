@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 16.08.2023
+              Modificado el 27.08.2023
  '''
 
 import mathLibrary as ml
@@ -142,9 +142,9 @@ def difusedShader(**kwargs):
     negativedLight = (-dLight[0], -dLight[1], -dLight[2])
     intensity = max(0, ml.twoVecDot(normal, negativedLight))
 
-    color1 = ( 0.5, 0.4, 0.4 ) #Color morado
-    color2 = (0.8, 0.7, 0.6) #Color rosa
-    color3 = (0.6, 0.5, 0.4) #Color celeste
+    color1 = (0.4, 0.3, 0.3) #Color corinto
+    color2 = (0.8, 0.6, 0.5)  #Color salmón
+    color3 = (0.3, 0.2, 0.4) #Color azul
 
     intensity = min(intensity * 2, 2)
 
@@ -223,7 +223,7 @@ def saturatedShader(**kwargs):
     saturation += 3
 
     #color = (0.5, 0.0, 1.0) #Color morado
-    color = (0.2, 0.6, 0.4) #Color verde
+    color = (0.8, 0.6, 0.5) #Color salmón
 
     b = (1.0 - saturation) * b + saturation * color[2]
     g = (1.0 - saturation) * g + saturation * color[1]
@@ -256,7 +256,7 @@ def outlineShader(**kwargs):
     negativedLight = (-dLight[0], -dLight[1], -dLight[2])
     intensity = max(0, ml.twoVecDot(normal, negativedLight))
 
-    outlineColor = (0.3, 0.7, 0.8)  #Color aqua
+    outlineColor = (0.8, 0.6, 0.5)  #Color salmón
     interiorColor = textureColor if texture != None else (1.0, 1.0, 1.0)
 
     threshold = 0.5 #Umbral de intensidad para resaltar el contorno
@@ -272,3 +272,49 @@ def outlineShader(**kwargs):
     finalColor = [max(0.0, min(1.0, channel)) for channel in finalColor]
 
     return finalColor
+
+def toonShader(**kwargs):
+    texture = kwargs["texture"]
+    tA, tB, tC = kwargs["texCoords"]
+    nA, nB, nC = kwargs["normals"]
+    dLight = kwargs["dLight"]
+    u, v, w = kwargs["bCoords"]
+
+    b = 1.0
+    g = 1.0
+    r = 1.0
+
+    if texture is not None:
+        tU = u * tA[0] + v * tB[0] + w * tC[0]
+        tV = u * tA[1] + v * tB[1] + w * tC[1]
+        
+        textureColor = texture.getColor(tU, tV)    
+        b *= textureColor[2]
+        g *= textureColor[1]
+        r *= textureColor[0]
+
+    normal= (u * nA[0] + v * nB[0] + w * nC[0],
+             u * nA[1] + v * nB[1] + w * nC[1],
+             u * nA[2] + v * nB[2] + w * nC[2])
+    
+    negativedLight = (-dLight[0], -dLight[1], -dLight[2])
+    intensity = ml.twoVecDot(normal, negativedLight)
+    
+    threshold = (0.2, 0.5, 0.7)  
+    shadowColor = (1.0, 0.8, 0.8)
+    
+    if intensity > threshold[2]:
+        intensity = 1.0
+    elif intensity > threshold[1]:
+        intensity = threshold[2]
+    elif intensity > threshold[0]:
+        intensity = threshold[1]
+    else:
+        intensity = threshold[0]
+        r, g, b = shadowColor
+
+    b *= intensity
+    g *= intensity
+    r *= intensity
+
+    return r, g, b  # Return the final color as a list

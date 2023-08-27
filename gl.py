@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 14.08.2023
+              Modificado el 26.08.2023
  '''
 
 import struct
