@@ -1,3 +1,2 @@
-# Computer-Graphics
-Repositorio para el curso de gráficas por computadoras.
-Sexto semestre - 2023
+# Ejercicio-4
+Repositorio para el ejercicio 4 del curso.
