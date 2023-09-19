@@ -15,15 +15,17 @@ screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.HWAC
 screen.set_alpha(None)
 
 rayTracer = Raytracer(screen)
-rayTracer.rtClearColor(0, 0, 0)
+rayTracer.rtClearColor(0.3, 0.3, 0.3)
 rayTracer.rtColor(1, 1, 1)
 
-rayTracer.scene.append(Sphere(position = (-2, 0, -5), radius = 0.5, material = brick()))
-rayTracer.scene.append(Sphere(position = (0, 0, -5), radius = 0.5, material=  grass()))
-rayTracer.scene.append(Sphere(position = (2, 0, -5), radius = 0.5, material = water()))
 
-rayTracer.lights.append(AmbientLight(intensity = 0.1))
-rayTracer.lights.append(DirectionalLight(direction = (-1, -1, -1), intensity = 0.7))
+rayTracer.scene.append(Sphere(position=(1, 1, -5), radius=0.5, material=grass()))
+rayTracer.scene.append(Sphere(position=(0, 0, -7), radius=2, material=brick()))
+rayTracer.scene.append(Sphere(position=(-1, 0, -4), radius=0.3, material=water()))
+
+rayTracer.lights.append(AmbientLight(intensity=0))
+rayTracer.lights.append(DirectionalLight(direction=(-1, -1, -1), intensity=0.3))
+rayTracer.lights.append(PointLight(position=(2.5, 5, -5), intensity=0.07, color=(1, 1, 1)))
 
 isRunning = True
 

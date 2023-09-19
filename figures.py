@@ -23,10 +23,10 @@ class Sphere(Shape):
     self.radius = radius
     super().__init__(position, material)
   
-  def ray_intersect(self, orig, dir):
-    L = np.subtract(self.position, orig)
+  def ray_intersect(self, origin, direction):
+    L = np.subtract(self.position, origin)
     lengthL = np.linalg.norm(L)
-    tca = np.dot(L, dir)
+    tca = np.dot(L, direction)
     d = (lengthL**2 - tca**2)**0.5
 
     if d > self.radius:
@@ -43,7 +43,7 @@ class Sphere(Shape):
     if t0 < 0:
       return None
     
-    P = np.add(orig, np.multiply(t0, dir))
+    P = np.add(origin, np.multiply(t0, direction))
     normal = np.subtract(P, self.position)
     normal = normal / np.linalg.norm(normal)
 
