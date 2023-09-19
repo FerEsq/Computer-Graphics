@@ -14,7 +14,7 @@ def water():
     return Material(diffuse=(0.2, 0.2, 0.8), spec=256, Ks=0.5)
 
 def snow():
-    return Material(diffuse=(1.0, 0.9, 0.8), spec=8, Ks=0.01)
+    return Material(diffuse=(1.0, 0.9, 0.8), spec=8, Ks=1)
 
 def stone():
     return Material(diffuse=(0.0, 0.0, 0.0), spec=8, Ks=0.01)
