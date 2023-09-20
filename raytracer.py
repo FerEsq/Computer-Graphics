@@ -1,3 +1,11 @@
+'''
+ * Nombre: raytracer.py
+ * Programadora: Fernanda Esquivel (esq21542@uvg.edu.gt)
+ * Lenguaje: Python
+ * Recursos: VSCode
+ * Historial: Finalizado el 20.09.2023
+ '''
+
 import pygame
 from pygame.locals import *
 
@@ -6,8 +14,8 @@ from figures import *
 from lights import *
 from materials import *
 
-width = 400
-height = 400
+width = 200
+height = 200
 
 pygame.init()
 
@@ -31,8 +39,8 @@ rayTracer.scene.append(Sphere(position = (0.25, 1.0, -5), radius = 0.05, materia
 rayTracer.scene.append(Sphere(position = (-0.25, 1.0, -5), radius = 0.05, material=  stone()))
 rayTracer.scene.append(Sphere(position = (0.25, 1.4, -5), radius = 0.1, material=  plastic()))
 rayTracer.scene.append(Sphere(position = (-0.25, 1.4, -5), radius = 0.1, material=  plastic()))
-rayTracer.scene.append(Sphere(position = (0.209, 1.13, -4), radius = 0.05, material=  stone()))
-rayTracer.scene.append(Sphere(position = (-0.209, 1.13, -4), radius = 0.05, material=  stone()))
+rayTracer.scene.append(Sphere(position = (0.19, 1.13, -4), radius = 0.05, material=  stone()))
+rayTracer.scene.append(Sphere(position = (-0.19, 1.13, -4), radius = 0.05, material=  stone()))
 
 #Botones del muñeco
 rayTracer.scene.append(Sphere(position = (0, 0.3, -5), radius = 0.15, material=  stone()))

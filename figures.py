@@ -1,4 +1,12 @@
-import numpy as np
+'''
+ * Nombre: figures.py
+ * Programadora: Fernanda Esquivel (esq21542@uvg.edu.gt)
+ * Lenguaje: Python
+ * Recursos: VSCode
+ * Historial: Finalizado el 20.09.2023
+ '''
+
+import mathLibrary as ml
 
 class Intercept(object):
   def __init__(self, distance, point, normal, obj):
@@ -24,9 +32,9 @@ class Sphere(Shape):
     super().__init__(position, material)
   
   def ray_intersect(self, origin, direction):
-    L = np.subtract(self.position, origin)
-    lengthL = np.linalg.norm(L)
-    tca = np.dot(L, direction)
+    L = ml.twoVecSubstraction(self.position, origin)
+    lengthL = ml.vecNormSimple(L)
+    tca = ml.twoVecDot(L, direction)
     d = (lengthL**2 - tca**2)**0.5
 
     if d > self.radius:
@@ -43,11 +51,14 @@ class Sphere(Shape):
     if t0 < 0:
       return None
     
-    P = np.add(origin, np.multiply(t0, direction))
-    normal = np.subtract(P, self.position)
-    normal = normal / np.linalg.norm(normal)
+    multi = ml.valVecMultiply(t0, direction)
+    #ml.twoVecMultiply(t0, direction)
+    P = ml.twoVecSum(origin, multi)
+    normal = ml.twoVecSubstraction(P, self.position)
+    normal = ml.vecNorm(normal)
 
     return Intercept(distance = t0,
                      point = P,
                      normal=normal,
                      obj=self)
+                     
