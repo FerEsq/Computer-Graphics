@@ -7,13 +7,15 @@
  '''
 
 import mathLibrary as ml
+from math import tan, pi, atan2, acos
 
-class Intercept(object):
-  def __init__(self, distance, point, normal, obj):
-    self.distance = distance
-    self.point = point
-    self.normal = normal
-    self.obj = obj
+class Intercept:
+  def __init__(self, distance, point, normal, obj, textureCoordinates):
+      self.distance = distance
+      self.point = point
+      self.normal = normal
+      self.obj = obj
+      self.textureCoordinates = textureCoordinates
 
 class Shape(object):
   def __init__(self, position, material):
@@ -57,8 +59,12 @@ class Sphere(Shape):
     normal = ml.twoVecSubstraction(P, self.position)
     normal = ml.vecNorm(normal)
 
+    u = 0.5 + (atan2(normal[2], normal[0]) / (2 * pi))
+    v = (acos(normal[1]) / pi)
+
     return Intercept(distance = t0,
                      point = P,
                      normal=normal,
-                     obj=self)
+                     obj=self,
+                     textureCoordinates=(u, v))
                      

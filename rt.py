@@ -6,8 +6,13 @@
  * Historial: Finalizado el 20.09.2023
  '''
 
-from math import pi, tan
+import numpy as np
+from math import tan, pi, atan2, acos
 import mathLibrary as ml
+from materials import *
+from lights import reflect
+
+MAX_RECURSION_DEPTH = 3
 
 class Raytracer(object):
     def __init__(self, screen):
@@ -35,6 +40,7 @@ class Raytracer(object):
         self.rtClearColor(0, 0, 0)
         self.rtColor(1, 1, 1)
         self.rtClear()
+        self.environmentMap = None
 
     def rtViewPort(self, x, y, width, height):
         self.vpX = x
@@ -67,7 +73,10 @@ class Raytracer(object):
 
             self.screen.set_at((x, y), color)
 
-    def rtCastRay(self, origin, direction, sceneObject=None):
+    def rtCastRay(self, origin, direction, sceneObject=None, recursionDepth=0):
+        if recursionDepth > MAX_RECURSION_DEPTH:
+            return None
+
         depth = float("inf")
         hit = None
 
@@ -80,6 +89,80 @@ class Raytracer(object):
                         hit = intercept
 
         return hit
+    
+    def rtRayColor(self, intercept, rayDirection, recursionDepth=0):
+        if intercept is None:
+            if self.environmentMap is not None:
+                x = (atan2(rayDirection[2], rayDirection[0]) / (2 * pi)) + 0.5
+                y = acos(rayDirection[1]) / pi
+                x = int(x * self.environmentMap.get_width())
+                y = int(y * self.environmentMap.get_height())
+                color = self.environmentMap.get_at((x, y))
+                return [color[i] / 255 for i in range(3)]
+            else:
+                color = self.clearColor
+                return [color[i] / 255 for i in range(3)]
+
+        surfaceColor = intercept.obj.material.diffuse
+        if intercept.obj.material.texture and intercept.textureCoordinates:
+            x = intercept.textureCoordinates[0] * intercept.obj.material.texture.get_width() - 1
+            y = intercept.textureCoordinates[1] * intercept.obj.material.texture.get_height() - 1
+            color = intercept.obj.material.texture.get_at((int(x), int(y)))
+            textureColor = [color[i] / 255 for i in range(3)]
+            surfaceColor = [surfaceColor[i] * textureColor[i] for i in range(3)]
+
+
+        ambientLightColor = [0, 0, 0]
+        diffuseLightColor = [0, 0, 0]
+        specularLightColor = [0, 0, 0]
+        reflectColor = [0, 0, 0]
+
+        if intercept.obj.material.type == OPAQUE:
+            for light in self.lights:
+                if light.ligthType == "Ambient":
+                    color = light.getColor()
+                    ambientLightColor = [ambientLightColor[i] + color[i] for i in range(3)]
+                else:
+                    shadowDirection = None
+                    if light.ligthType == "Directional":
+                        shadowDirection = [i * -1 for i in light.direction]
+                    if light.ligthType== "Point":
+                        lightDirection = np.subtract(light.position, intercept.point)
+                        shadowDirection = lightDirection / np.linalg.norm(lightDirection)
+
+                    shadowIntersect = self.rtCastRay(intercept.point, shadowDirection, intercept.obj)
+
+                    if shadowIntersect is None:
+                        diffColor = light.getDiffuseColor(intercept)
+                        diffuseLightColor = [diffuseLightColor[i] + diffColor[i] for i in range(3)]
+
+                        specColor = light.getSpecularColor(intercept, self.cameraPosition)
+                        specularLightColor = [specularLightColor[i] + specColor[i] for i in range(3)]
+        elif intercept.obj.material.type == REFLECTIVE:
+            reflectRay = reflect(intercept.normal, np.array(rayDirection) * -1)
+            reflectIntercept = self.rtCastRay(intercept.point, reflectRay, intercept.obj, recursionDepth + 1)
+            reflectColor = self.rtRayColor(reflectIntercept, reflectRay, recursionDepth + 1)
+
+            for light in self.lights:
+                if light.ligthType != "Ambient":
+                    shadowDirection = None
+                    if light.ligthType == "Directional":
+                        shadowDirection = [i * -1 for i in light.direction]
+                    if light.ligthType == "Point":
+                        lightDirection = np.subtract(light.position, intercept.point)
+                        shadowDirection = lightDirection / np.linalg.norm(lightDirection)
+
+                    shadowIntersect = self.rtCastRay(intercept.point, shadowDirection, intercept.obj)
+
+                    if shadowIntersect is None:
+                        specColor = light.getSpecularColor(intercept, self.cameraPosition)
+                        specularLightColor = [specularLightColor[i] + specColor[i] for i in range(3)]
+
+        lightColor = [ambientLightColor[i] + diffuseLightColor[i] + specularLightColor[i] + reflectColor[i]
+                      for i in range(3)]
+        finalColor = [surfaceColor[i] * lightColor[i] for i in range(3)]
+        finalColor = [min(1, i) for i in finalColor]
+        return finalColor
 
     def rtRender(self):
         for x in range(self.vpX, self.vpX + self.vpWidth + 1):
@@ -92,40 +175,11 @@ class Raytracer(object):
                     pY *= self.topEdge
 
                     direction = (pX, pY, -self.nearPlane)
-                    direction = ml.vecNorm(direction)
+                    direction = direction / np.linalg.norm(direction)
 
                     intercept = self.rtCastRay(self.cameraPosition, direction)
-                    if intercept is not None:
-                        surfaceColor = intercept.obj.material.diffuse
-                        ambientLightColor = [0, 0, 0]
-                        diffuseLightColor = [0, 0, 0]
-                        specularLightColor = [0, 0, 0]
+                    finalColor = self.rtRayColor(intercept, direction)
 
-                        for light in self.lights:
-                            if light.ligthType == "Ambient":
-                                color = light.getColor()
-                                ambientLightColor = [ambientLightColor[i] + color[i] for i in range(3)]
-                            else:
-                                shadowDirection = None
-                                if light.ligthType == "Directional":
-                                    shadowDirection = [i * -1 for i in light.direction]
-                                if light.ligthType == "Point":
-                                    lightDirection = ml.twoVecSubstraction(light.position, intercept.point)
-                                    shadowDirection = ml.vecNorm(lightDirection)
-
-                                shadowIntersect = self.rtCastRay(intercept.point, shadowDirection, intercept.obj)
-
-                                if shadowIntersect is None:
-                                    diffColor = light.getDiffuseColor(intercept)
-                                    diffuseLightColor = [diffuseLightColor[i] + diffColor[i] for i in range(3)]
-
-                                    specColor = light.getSpecularColor(intercept, self.cameraPosition)
-                                    specularLightColor = [specularLightColor[i] + specColor[i] for i in range(3)]
-
-                        lightColor = [ambientLightColor[i] + diffuseLightColor[i] + specularLightColor[i]
-                                      for i in range(3)]
-
-                        finalColor = [surfaceColor[i] * lightColor[i] for i in range(3)]
-                        finalColor = [min(1, i) for i in finalColor]
-
+                    if finalColor is not None:
                         self.rtPoint(x, y, finalColor)
+        pygame.display.flip()
