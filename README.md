@@ -1,5 +1,5 @@
-# Ejercicio-4
-Branch para el ejercicio 4 del curso.
+# Ejercicio-5
+Branch para el ejercicio 5 del curso.
 
 ## Resultado final
-<img src="snowman.png" alt="Texto alternativo" width="250" height="250">
+<img src="scene.jpg" alt="Texto alternativo" width="250" height="250">
