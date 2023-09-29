@@ -3,19 +3,18 @@
  * Programadora: Fernanda Esquivel (esq21542@uvg.edu.gt)
  * Lenguaje: Python
  * Recursos: VSCode
- * Historial: Finalizado el 20.09.2023
+ * Historial: Finalizado el 29.09.2023
  '''
 
 import pygame
-from pygame.locals import *
 
-from rt import Raytracer
 from figures import *
 from lights import *
+from rt import *
 from materials import *
 
-width = 300
-height = 300
+width = 212
+height = 212
 
 pygame.init()
 
@@ -27,11 +26,23 @@ rayTracer.environmentMap = pygame.image.load("maps/map.jpg")
 rayTracer.rtClearColor(0.25, 0.25, 0.25)
 rayTracer.rtColor(1, 1, 1)
 
+'''
 rayTracer.scene.append(
     Sphere(position=(0, 0, -7), radius=2, material=soapy())
 )
 rayTracer.scene.append(
     Sphere(position=(-1.5, -1, -5), radius=0.5, material=earth())
+)
+'''
+
+rayTracer.scene.append(
+    Sphere(position=(-1, 0, -5), radius=1, material=glass())
+)
+rayTracer.scene.append(
+    Sphere(position=(1, 0, -5), radius=1, material=diamond())
+)
+rayTracer.scene.append(
+    Sphere(position=(0, 1, -8), radius=1, material=brick())
 )
 
 rayTracer.lights.append(
@@ -48,7 +59,6 @@ rayTracer.rtClear()
 rayTracer.rtRender()
 
 isRunning = True
-
 while isRunning:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -56,9 +66,5 @@ while isRunning:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 isRunning = False
-
-    rayTracer.rtClear()
-    rayTracer.rtRender()
-    pygame.display.flip()
 
 pygame.quit()
