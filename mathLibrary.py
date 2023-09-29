@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 16.07.2023 
-              Modificado el 20.09.2023
+              Modificado el 29.09.2023
  '''
 
 from math import isclose, sqrt
@@ -64,27 +64,16 @@ def barycentricCoords(A, B, C, P):
         return -1,-1,-1
 
 def twoVecSubstraction(V1, V2): #Replace for: np.subtract(V1, V2)
-    result = (V1[0] - V2[0], V1[1] - V2[1], V1[2] - V2[2])
+    result = [x - y for x, y in zip(V1, V2)]
     return result
 
 def vecNorm(V): #Replace for: V / np.linalg.norm(V)
-    V = list(V)
-
-    m = sqrt(sum(c ** 2 for c in V))
-    
-    if m == 0:
-        return V
-    
-    result = [(c / m) for c in V]
-    result = tuple(result)
+    norm = sqrt(sum([x * x for x in V]))
+    result = [x / norm for x in V]
     return result
 
 def vecNormSimple(V): #Replace for: np.linalg.norm(V)
-    if not V:
-        raise ValueError("El vector no puede estar vacío")
-    
-    squaredSum = sum(component ** 2 for component in V)
-    result = squaredSum ** 0.5
+    result = sqrt(sum([x * x for x in V]))
     return result
 
 def twoVecCross(V1, V2):
@@ -138,11 +127,7 @@ def twoVecSum(V1, V2): #Replace for: np.add(V1, V2)
     result = [x + y for x, y in zip(V1, V2)]
     return result
 
-def twoVecMultiply(V1, V2): #Replace for: np.multiply(V1, V2)
-    print(V1, V2)
-    if len(V1) != len(V2):
-        raise ValueError("Las listas deben tener la misma longitud")
-    
+def twoVecMultiply(V1, V2): #Replace for: np.multiply(V1, V2)    
     result = [x * y for x, y in zip(V1, V2)]
     return result
 

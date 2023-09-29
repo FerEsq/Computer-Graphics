@@ -7,7 +7,6 @@
  '''
 
 from math import tan, pi, atan2, acos
-import numpy as np
 import pygame
 from materials import *
 from lights import *
@@ -129,8 +128,8 @@ class Raytracer(object):
                     if light.type == "DIRECTIONAL":
                         shadowDirection = [i * -1 for i in light.direction]
                     if light.type == "POINT":
-                        lightDirection = np.subtract(light.position, intercept.point)
-                        shadowDirection = lightDirection / np.linalg.norm(lightDirection)
+                        lightDirection = ml.twoVecSubstraction(light.position, intercept.point)
+                        shadowDirection = ml.vecNorm(lightDirection)
 
                     shadowIntersect = self.rtCastRay(intercept.point, shadowDirection, intercept.obj)
 
@@ -141,7 +140,11 @@ class Raytracer(object):
                         specColor = light.getSpecularColor(intercept, self.cameraPosition)
                         specularLightColor = [specularLightColor[i] + specColor[i] for i in range(3)]
         elif intercept.obj.material.type == REFLECTIVE:
-            reflectRay = reflect(intercept.normal, np.array(rayDirection) * -1)
+
+            factor = -1
+            negativeRayDirection = [elemento * factor for elemento in rayDirection]
+
+            reflectRay = reflect(intercept.normal, negativeRayDirection)
             reflectIntercept = self.rtCastRay(intercept.point, reflectRay, intercept.obj, recursionDepth + 1)
             reflectColor = self.rtRayColor(reflectIntercept, reflectRay, recursionDepth + 1)
 
@@ -151,8 +154,8 @@ class Raytracer(object):
                     if light.type == "DIRECTIONAL":
                         shadowDirection = [i * -1 for i in light.direction]
                     if light.type == "POINT":
-                        lightDirection = np.subtract(light.position, intercept.point)
-                        shadowDirection = lightDirection / np.linalg.norm(lightDirection)
+                        lightDirection = ml.twoVecSubstraction(light.position, intercept.point)
+                        shadowDirection = ml.vecNorm(lightDirection)
 
                     shadowIntersect = self.rtCastRay(intercept.point, shadowDirection, intercept.obj)
 
@@ -160,11 +163,14 @@ class Raytracer(object):
                         specColor = light.getSpecularColor(intercept, self.cameraPosition)
                         specularLightColor = [specularLightColor[i] + specColor[i] for i in range(3)]
         elif intercept.obj.material.type == TRANSPARENT:
-            isOutside = np.dot(rayDirection, intercept.normal) < 0
-            bias = intercept.normal * 0.001
-
-            reflectRay = reflect(intercept.normal, np.array(rayDirection) * -1)
-            reflectOrigin = np.add(intercept.point, bias) if isOutside else np.subtract(intercept.point, bias)
+            isOutside = ml.twoVecDot(rayDirection, intercept.normal) < 0
+            factor = 0.001
+            bias = [elemento * factor for elemento in intercept.normal]
+            
+            factor = -1
+            negativeRayDirection = [elemento * factor for elemento in rayDirection]
+            reflectRay = reflect(intercept.normal, negativeRayDirection)
+            reflectOrigin = ml.twoVecSum(intercept.point, bias) if isOutside else ml.twoVecSubstraction(intercept.point, bias)
             reflectIntercept = self.rtCastRay(reflectOrigin, reflectRay, None, recursionDepth + 1)
             reflectColor = self.rtRayColor(reflectIntercept, reflectRay, recursionDepth + 1)
 
@@ -174,8 +180,8 @@ class Raytracer(object):
                     if light.type == "DIRECTIONAL":
                         shadowDirection = [i * -1 for i in light.direction]
                     if light.type == "POINT":
-                        lightDirection = np.subtract(light.position, intercept.point)
-                        shadowDirection = lightDirection / np.linalg.norm(lightDirection)
+                        lightDirection = ml.twoVecSubstraction(light.position, intercept.point)
+                        shadowDirection = ml.vecNorm(lightDirection)
 
                     shadowIntersect = self.rtCastRay(intercept.point, shadowDirection, intercept.obj)
 
@@ -184,14 +190,14 @@ class Raytracer(object):
                         specularLightColor = [specularLightColor[i] + specColor[i] for i in range(3)]
 
             if not totalInternalReflection(intercept.normal, rayDirection, 1.0, intercept.obj.material.ior):
-                refractRay = refract(intercept.normal, np.array(rayDirection), 1.0, intercept.obj.material.ior)
-                refractOrigin = np.subtract(intercept.point, bias) if isOutside else np.add(intercept.point, bias)
+                refractRay = refract(intercept.normal, rayDirection, 1.0, intercept.obj.material.ior)
+                refractOrigin = ml.twoVecSubstraction(intercept.point, bias) if isOutside else ml.twoVecSum(intercept.point, bias)
                 refractIntercept = self.rtCastRay(refractOrigin, refractRay, None, recursionDepth + 1)
                 refractColor = self.rtRayColor(refractIntercept, refractRay, recursionDepth + 1)
 
                 kr, kt = fresnel(intercept.normal, rayDirection, 1.0, intercept.obj.material.ior)
-                reflectColor = np.multiply(reflectColor, kr)
-                refractColor = np.multiply(refractColor, kt)
+                reflectColor = ml.valVecMultiply(kr, reflectColor)
+                refractColor = ml.valVecMultiply(kt, refractColor)
 
         lightColor = [ambientLightColor[i] + diffuseLightColor[i] +
                       specularLightColor[i] + reflectColor[i] + refractColor[i]
@@ -211,7 +217,7 @@ class Raytracer(object):
                     pY *= self.topEdge
 
                     direction = (pX, pY, -self.nearPlane)
-                    direction = direction / np.linalg.norm(direction)
+                    direction = ml.vecNorm(direction)
 
                     intercept = self.rtCastRay(self.cameraPosition, direction)
                     finalColor = self.rtRayColor(intercept, direction)

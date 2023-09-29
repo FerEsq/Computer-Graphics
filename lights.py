@@ -6,15 +6,15 @@
  * Historial: Finalizado el 29.09.2023
  '''
 
-import numpy as np
+import mathLibrary as ml
 from math import acos, asin, sin, cos
 
 def reflect(normal, direction):
-    reflectValue = (2 * np.dot(normal, direction) * normal - direction)
-    return reflectValue / np.linalg.norm(reflectValue)
+    reflectValue = [2 * ml.twoVecDot(normal, direction) * n - d for n, d in zip(normal, direction)]
+    return ml.vecNorm(reflectValue)
 
 def totalInternalReflection(incident, normal, n1, n2):
-    c1 = np.dot(normal, incident)
+    c1 = ml.twoVecDot(normal, incident)
 
     if c1 < 0:
         c1 = -c1
@@ -31,22 +31,30 @@ def totalInternalReflection(incident, normal, n1, n2):
 
 
 def refract(normal, incident, n1, n2):
-    c1 = np.dot(normal, incident)
+    c1 = ml.twoVecDot(normal, incident)
 
     if c1 < 0:
         c1 = -c1
     else:
-        normal = np.array(normal) * -1
+        factor = -1
+        normal = [elemento * factor for elemento in normal]
         n1, n2 = n2, n1
 
     n = n1 / n2
 
-    t = n * (incident + c1 * normal) - normal * (1 - n ** 2 * (1 - c1 ** 2)) ** 0.5
-    return t / np.linalg.norm(t)
+    p1 = incident + [elemento * c1 for elemento in normal]
+    p2 = 1 - n ** 2 * (1 - c1 ** 2)
+
+    sp1 = [elemento * n for elemento in p1]
+    sp2 = p2 ** 0.5
+    sp3 = [elemento * sp2 for elemento in normal]
+    
+    t = ml.twoVecSubstraction(sp1, sp3)
+    return ml.vecNorm(t)
 
 
 def fresnel(normal, incident, n1, n2):
-    c1 = np.dot(normal, incident)
+    c1 = ml.twoVecDot(normal, incident)
 
     if c1 < 0:
         c1 = -c1
@@ -89,12 +97,12 @@ class AmbientLight(Light):
 class DirectionalLight(Light):
     def __init__(self, direction=(0, 1, 0), intensity=1, color=(1, 1, 1)):
         super().__init__(intensity, color, "DIRECTIONAL")
-        self.direction = direction / np.linalg.norm(direction)
+        self.direction = ml.vecNorm(direction)
 
     def getDiffuseColor(self, intercept):
         direction = [i * -1 for i in self.direction]
 
-        intensity = np.dot(intercept.normal, direction) * self.intensity
+        intensity = ml.twoVecDot(intercept.normal, direction) * self.intensity
         intensity = max(0, min(1, intensity))
         intensity *= 1 - intercept.obj.material.Ks
 
@@ -105,10 +113,10 @@ class DirectionalLight(Light):
 
         reflectDirection = reflect(intercept.normal, direction)
 
-        viewDirection = np.subtract(viewPosition, intercept.point)
-        viewDirection = viewDirection / np.linalg.norm(viewDirection)
+        viewDirection = ml.twoVecSubstraction(viewPosition, intercept.point)
+        viewDirection = ml.vecNorm(viewDirection)
 
-        intensity = max(0, min(1, np.dot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
+        intensity = max(0, min(1, ml.twoVecDot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
         intensity *= self.intensity
         intensity *= intercept.obj.material.Ks
 
@@ -120,11 +128,11 @@ class PointLight(Light):
         self.position = position
 
     def getDiffuseColor(self, intercept):
-        direction = np.subtract(self.position, intercept.point)
-        radius = np.linalg.norm(direction)
+        direction = ml.twoVecSubstraction(self.position, intercept.point)
+        radius = ml.vecNormSimple(direction)
         direction = direction / radius
 
-        intensity = np.dot(intercept.normal, direction) * self.intensity
+        intensity = ml.twoVecDot(intercept.normal, direction) * self.intensity
         intensity *= 1 - intercept.obj.material.Ks
 
         if radius != 0:
@@ -134,16 +142,16 @@ class PointLight(Light):
         return [i * intensity for i in self.color]
 
     def getSpecularColor(self, intercept, viewPosition):
-        direction = np.subtract(self.position, intercept.point)
-        radius = np.linalg.norm(direction)
+        direction = ml.twoVecSubstraction(self.position, intercept.point)
+        radius = ml.vecNormSimple(direction)
         direction = direction / radius
 
         reflectDirection = reflect(intercept.normal, direction)
 
-        viewDirection = np.subtract(viewPosition, intercept.point)
-        viewDirection = viewDirection / np.linalg.norm(viewDirection)
+        viewDirection = ml.twoVecSubstraction(viewPosition, intercept.point)
+        viewDirection = ml.vecNorm(viewDirection)
 
-        intensity = max(0, min(1, np.dot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
+        intensity = max(0, min(1, ml.twoVecDot(reflectDirection, viewDirection))) ** intercept.obj.material.spec
         intensity *= self.intensity
         intensity *= intercept.obj.material.Ks
 

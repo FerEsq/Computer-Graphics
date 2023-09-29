@@ -6,7 +6,7 @@
  * Historial: Finalizado el 29.09.2023
  '''
 
-import numpy as np
+import mathLibrary as ml
 from math import tan, pi, atan2, acos
 
 class Shape:
@@ -34,9 +34,9 @@ class Sphere(Shape):
         self.radius = radius
 
     def intersect(self, origin, direction):
-        L = np.subtract(self.position, origin)
-        lengthL = np.linalg.norm(L)
-        tca = np.dot(L, direction)
+        L = ml.twoVecSubstraction(self.position, origin)
+        lengthL = ml.vecNormSimple(L)
+        tca = ml.twoVecDot(L, direction)
         d = (lengthL ** 2 - tca ** 2) ** 0.5
 
         if d > self.radius:
@@ -51,11 +51,11 @@ class Sphere(Shape):
 
         if t0 < 0:
             return None
-
-        point = np.add(origin, np.multiply(t0, direction))
-        normal = np.subtract(point, self.position)
-        normal = normal / np.linalg.norm(normal)
-
+        
+        point = ml.twoVecSum(origin, ml.valVecMultiply(t0, direction))
+        normal = ml.twoVecSubstraction(point, self.position)
+        normal = ml.vecNorm(normal)
+        
         u = 0.5 + (atan2(normal[2], normal[0]) / (2 * pi))
         v = (acos(normal[1]) / pi)
 
