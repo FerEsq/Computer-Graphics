@@ -13,8 +13,8 @@ from lights import *
 from rt import *
 from materials import *
 
-width = 480
-height = 480
+width = 600
+height = 600
 
 pygame.init()
 
@@ -22,50 +22,49 @@ screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.HWAC
 screen.set_alpha(None)
 
 rayTracer = Raytracer(screen)
+'''
 rayTracer.environmentMap = pygame.image.load("maps/map2.jpg")
 rayTracer.rtClearColor(0.25, 0.25, 0.25)
+'''
+rayTracer.rtClearColor(0.1, 0.4, 0.1)
 rayTracer.rtColor(1, 1, 1)
 
-# Reflectivas
 rayTracer.scene.append(
-    Sphere(position=(0, 1, -5), radius=0.6, material=soapy())
+    Plane(position=(0, -2, 0), normal=(0, 1, -0.2), material=floor())
 )
 rayTracer.scene.append(
-    Sphere(position=(0, -1, -5), radius=0.6, material=electric())
+    Plane(position=(0, 5, 0), normal=(0, 1, 0.2), material=ceiling())
+)
+rayTracer.scene.append(
+    Plane(position=(4, 0, 0), normal=(1, 0, 0.2), material=wall())
+)
+rayTracer.scene.append(
+    Plane(position=(-4, 0, 0), normal=(1, 0, -0.2), material=wall())
+)
+rayTracer.scene.append(
+    Plane(position=(0, 0, 5), normal=(0, 0, 1), material=brick())
 )
 
-# Transparentes
 rayTracer.scene.append(
-    Sphere(position=(1.7, 1, -5), radius=0.6, material=glass())
+    Disk(position=(0, 2, -5), normal=(0, 1, -0.1), radius=1, material=mirror())
 )
 rayTracer.scene.append(
-    Sphere(position=(1.7, -1, -5), radius=0.6, material=diamond())
+    Disk(position=(0, -2, -5), normal=(0, 1, 0.1), radius=1, material=mirror())
 )
 
-# Iluminación reflectivas y transparentes
+rayTracer.scene.append(
+    AABB(position=(0, 1.2, -5), size=(1, 1, 1), material=pink())
+)
+rayTracer.scene.append(
+    AABB(position=(0, 0, -5), size=(1, 1, 1), material=purple())
+)
+rayTracer.scene.append(
+    AABB(position=(0, -1.2, -5), size=(1, 1, 1), material=blue())
+)
+
+
 rayTracer.lights.append(
-    AmbientLight(intensity=1)
-)
-rayTracer.lights.append(
-    DirectionalLight(direction=(-1, -1, -1), intensity=0.7)
-)
-rayTracer.lights.append(
-    PointLight(position=(0, 0, -4.5), intensity=1, color=(1, 1, 1))
-)
-
-# Iluminación opacas
-rayTracer.lights.clear()
-rayTracer.lights.append(
-    AmbientLight(intensity=0.6)
-)
-
-# Opacas
-rayTracer.scene.append(
-    Sphere(position=(-1.7, 1, -5), radius=0.6, material=earth())
-)
-
-rayTracer.scene.append(
-    Sphere(position=(-1.7, -1, -5), radius=0.6, material=studio())
+    AmbientLight(intensity=0.7)
 )
 
 rayTracer.rtClear()
@@ -79,9 +78,9 @@ while isRunning:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 isRunning = False
-'''
+
 rect = pygame. Rect(0, 0, width, height)
 sub = screen.subsurface(rect)
 pygame.image.save(sub, "scene.jpg")
-'''
+
 pygame.quit()
