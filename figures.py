@@ -4,11 +4,11 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 29.09.2023
+              Modificado el 06.10.2023
  '''
 
 import mathLibrary as ml
 from math import tan, pi, atan2, acos
-import numpy as np
 
 class Shape:
     def __init__(self, position, material):
@@ -69,20 +69,20 @@ class Sphere(Shape):
 class Plane(Shape):
     def __init__(self, position, normal, material):
         super().__init__(position, material)
-        self.normal = normal / np.linalg.norm(normal)
+        self.normal = ml.vecNorm(normal)
 
     def intersect(self, origin, direction):
-        denominator = np.dot(direction, self.normal)
+        denominator = ml.twoVecDot(direction, self.normal)
 
         if abs(denominator) <= 0.0001:
             return None
 
-        t = np.dot(np.subtract(self.position, origin), self.normal) / denominator
+        t = ml.twoVecDot(ml.twoVecSubstraction(self.position, origin), self.normal) / denominator
 
         if t < 0:
             return None
-
-        point = np.add(origin, np.multiply(t, direction))
+        
+        point = ml.twoVecSum(origin, ml.valVecMultiply(t, direction))
 
         return Intercept(distance=t,
                          point=point,
@@ -101,7 +101,7 @@ class Disk(Plane):
         if intercept is None:
             return None
 
-        if np.linalg.norm(np.subtract(intercept.point, self.position)) > self.radius:
+        if ml.vecNormSimple(ml.twoVecSubstraction(intercept.point, self.position)) > self.radius:
             return None
 
         return Intercept(
@@ -119,32 +119,32 @@ class AABB(Shape):
         self.planes = []
 
         leftPlane = Plane(
-            np.add(self.position, (-size[0] / 2, 0, 0)),
+            ml.twoVecSum(self.position, (-size[0] / 2, 0, 0)),
             (-1, 0, 0),
             self.material
         )
         rightPlane = Plane(
-            np.add(self.position, (size[0] / 2, 0, 0)),
+            ml.twoVecSum(self.position, (size[0] / 2, 0, 0)),
             (1, 0, 0),
             self.material
         )
         bottomPlane = Plane(
-            np.add(self.position, (0, -size[1] / 2, 0)),
+            ml.twoVecSum(self.position, (0, -size[1] / 2, 0)),
             (0, -1, 0),
             self.material
         )
         topPlane = Plane(
-            np.add(self.position, (0, size[1] / 2, 0)),
+            ml.twoVecSum(self.position, (0, size[1] / 2, 0)),
             (0, 1, 0),
             self.material
         )
         backPlane = Plane(
-            np.add(self.position, (0, 0, -size[2] / 2)),
+            ml.twoVecSum(self.position, (0, 0, -size[2] / 2)),
             (0, 0, -1),
             self.material
         )
         frontPlane = Plane(
-            np.add(self.position, (0, 0, size[2] / 2)),
+            ml.twoVecSum(self.position, (0, 0, size[2] / 2)),
             (0, 0, 1),
             self.material
         )

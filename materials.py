@@ -4,6 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 12.09.2023
+              Modificado el 06.10.2023
  '''
 
 import pygame

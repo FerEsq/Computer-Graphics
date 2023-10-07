@@ -4,6 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 29.09.2023
+              Modificado el 06.10.2023
  '''
 
 import pygame
@@ -13,8 +14,8 @@ from lights import *
 from rt import *
 from materials import *
 
-width = 600
-height = 600
+width = 480
+height = 480
 
 pygame.init()
 
@@ -78,9 +79,9 @@ while isRunning:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 isRunning = False
-
+'''
 rect = pygame. Rect(0, 0, width, height)
 sub = screen.subsurface(rect)
 pygame.image.save(sub, "scene.jpg")
-
+'''
 pygame.quit()
