@@ -22,6 +22,9 @@ class Material:
         self.type = type
         self.texture = texture
 
+def green():
+    return Material(diffuse=(0.1, 0.4, 0.1), spec=64, Ks=0.15, type=OPAQUE)
+
 def pink():
     return Material(diffuse=(0.9, 0.6, 0.7), spec=64, Ks=0.15, type=OPAQUE, texture=pygame.image.load("maps/pink.jpg"))
 

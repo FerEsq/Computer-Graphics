@@ -9,6 +9,7 @@
 
 import mathLibrary as ml
 from math import tan, pi, atan2, acos
+import numpy as np
 
 class Shape:
     def __init__(self, position, material):
@@ -198,3 +199,127 @@ class AABB(Shape):
             obj=self,
             textureCoordinates=(u, v)
         )
+    
+class Triangle(Shape):
+    def __init__(self, vertices, material):
+        centroid = np.mean(vertices, axis=0)
+        super().__init__(centroid, material)
+        self.vertices = vertices
+
+    def intersect(self, origin, direction):
+        # Calculate the normal of the triangle
+        edge1 = self.vertices[1] - self.vertices[0]
+        edge2 = self.vertices[2] - self.vertices[0]
+        normal = np.cross(edge1, edge2)
+        normal /= np.linalg.norm(normal)
+
+        denominator = np.dot(normal, direction)
+
+        if abs(denominator) <= 0.0001:
+            return None
+
+        t = (np.dot(normal, self.vertices[0]) - np.dot(normal, origin)) / denominator
+
+        if t < 0:
+            return None
+
+        point = np.add(origin, np.multiply(t, direction))
+
+        # Check if the point is inside the triangle
+        edge0 = self.vertices[0] - self.vertices[2]
+        edge1 = self.vertices[1] - self.vertices[0]
+        edge2 = self.vertices[2] - self.vertices[1]
+
+        normal0 = np.cross(edge0, point - self.vertices[2])
+        normal1 = np.cross(edge1, point - self.vertices[0])
+        normal2 = np.cross(edge2, point - self.vertices[1])
+
+        if np.dot(normal, normal0) >= 0 and np.dot(normal, normal1) >= 0 and np.dot(normal, normal2) >= 0:
+            u = np.dot(edge1, (point - self.vertices[0]))
+            v = np.dot(edge0, (point - self.vertices[2]))
+            w = np.dot(edge2, (point - self.vertices[1]))
+            det = u + v + w
+
+            # Calculate barycentric coordinates
+            u = u / det
+            v = w / det
+
+            u *= 1
+            v *= 1
+
+            return Intercept(
+                distance=t,
+                point=point,
+                normal=normal,
+                obj=self,
+                textureCoordinates=(u, v)
+            )
+
+        return None
+
+    def normal(self, point):
+        # The normal of a triangle is constant
+        edge1 = self.vertices[1] - self.vertices[0]
+        edge2 = self.vertices[2] - self.vertices[0]
+        normal = np.cross(edge1, edge2)
+        normal /= np.linalg.norm(normal)
+        return normal
+
+class Pyramid(Shape):
+    def __init__(self, position, size, material):
+        super().__init__(position, material)
+        self.size = size
+        
+        width = size[0]
+        height = size[1]
+        depth = size[2]
+
+        half_width = width / 2
+        half_height = height / 2
+        half_depth = depth / 2
+
+        # Define the vertices of the pyramid with the tip pointing up
+        vertices = [
+            np.add(position, (half_width, -half_height, half_depth)),
+            np.add(position, (-half_width, -half_height, half_depth)),
+            np.add(position, (-half_width, -half_height, -half_depth)),
+            np.add(position, (half_width, -half_height, -half_depth)),
+            np.add(position, (0, half_height, 0))
+        ]
+
+        # Create triangles for the pyramid's faces
+        self.triangles = [
+            Triangle([vertices[0], vertices[1], vertices[4]], material),
+            Triangle([vertices[1], vertices[2], vertices[4]], material),
+            Triangle([vertices[2], vertices[3], vertices[4]], material),
+            Triangle([vertices[3], vertices[0], vertices[4]], material),
+            Triangle([vertices[0], vertices[1], vertices[2]], material)
+        ]
+
+    def intersect(self, origin, direction):
+        intersect = None
+        t = float('inf')
+
+        for triangle in self.triangles:
+            triangle_intersect = triangle.intersect(origin, direction)
+            if triangle_intersect and triangle_intersect.distance < t:
+                t = triangle_intersect.distance
+                intersect = triangle_intersect
+
+        if intersect:
+            return Intercept(
+                distance=intersect.distance,
+                point=intersect.point,
+                normal=intersect.normal,
+                obj=self,
+                textureCoordinates=intersect.textureCoordinates
+            )
+        else:
+            return None
+
+    def normal(self, point):
+        # Calculate the normal as the average of the triangle normals
+        normal_sum = np.array([0.0, 0.0, 0.0])
+        for triangle in self.triangles:
+            normal_sum += triangle.normal(point)
+        return normal_sum / len(self.triangles)

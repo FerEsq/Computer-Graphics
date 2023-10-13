@@ -105,10 +105,14 @@ class Raytracer(object):
 
         surfaceColor = intercept.obj.material.diffuse
         if intercept.obj.material.texture and intercept.textureCoordinates:
-            x = intercept.textureCoordinates[0] * intercept.obj.material.texture.get_width() - 1
-            y = intercept.textureCoordinates[1] * intercept.obj.material.texture.get_height() - 1
-            color = intercept.obj.material.texture.get_at((int(x), int(y)))
-            textureColor = [color[i] / 255 for i in range(3)]
+            x = int(intercept.textureCoordinates[0] * intercept.obj.material.texture.get_width() - 1)
+            y = int(intercept.textureCoordinates[1] * intercept.obj.material.texture.get_height() - 1)
+            if y >= intercept.obj.material.texture.get_height() or x >= intercept.obj.material.texture.get_width() or x < 0 or y < 0:
+                color = [0,0,0]
+            else:
+                color = intercept.obj.material.texture.get_at((x, y))
+
+            textureColor = [i / 255 for i in color]
             surfaceColor = [surfaceColor[i] * textureColor[i] for i in range(3)]
 
 
@@ -224,4 +228,4 @@ class Raytracer(object):
 
                     if finalColor is not None:
                         self.rtPoint(x, y, finalColor)
-        pygame.display.flip()
+                    pygame.display.flip()

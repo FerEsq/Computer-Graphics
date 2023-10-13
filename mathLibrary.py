@@ -76,7 +76,7 @@ def vecNormSimple(V): #Replace for: np.linalg.norm(V)
     result = sqrt(sum([x * x for x in V]))
     return result
 
-def twoVecCross(V1, V2):
+def twoVecCross(V1, V2): #Replace for: np.cross(V1, V2)
     if len(V1) != len(V2):
         print("Los vectores deben tener la misma cantidad de componentes")
     
@@ -134,3 +134,21 @@ def twoVecMultiply(V1, V2): #Replace for: np.multiply(V1, V2)
 def valVecMultiply(val, V): #Replace for: np.multiply(val, V2)
     result = [x * val for x in V]
     return result
+
+def vecMean(V): #Replace for: np.mean(V, axis=0)
+    if not V:
+        return None  # Devolver None si el arreglo está vacío
+
+    nRows = len(V)
+    nColumns = len(V[0])
+
+    meanColumns = [0] * nColumns
+
+    for row in V:
+        for i in range(nColumns):
+            meanColumns[i] += row[i]
+
+    for i in range(nColumns):
+        meanColumns[i] /= nRows
+
+    return meanColumns

@@ -14,8 +14,8 @@ from lights import *
 from rt import *
 from materials import *
 
-width = 480
-height = 480
+width = 300
+height = 300
 
 pygame.init()
 
@@ -23,46 +23,24 @@ screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.HWAC
 screen.set_alpha(None)
 
 rayTracer = Raytracer(screen)
-'''
 rayTracer.environmentMap = pygame.image.load("maps/map2.jpg")
 rayTracer.rtClearColor(0.25, 0.25, 0.25)
-'''
-rayTracer.rtClearColor(0.1, 0.4, 0.1)
 rayTracer.rtColor(1, 1, 1)
 
+# Transparentes
 rayTracer.scene.append(
-    Plane(position=(0, -2, 0), normal=(0, 1, -0.2), material=floor())
-)
-rayTracer.scene.append(
-    Plane(position=(0, 5, 0), normal=(0, 1, 0.2), material=ceiling())
-)
-rayTracer.scene.append(
-    Plane(position=(4, 0, 0), normal=(1, 0, 0.2), material=wall())
-)
-rayTracer.scene.append(
-    Plane(position=(-4, 0, 0), normal=(1, 0, -0.2), material=wall())
-)
-rayTracer.scene.append(
-    Plane(position=(0, 0, 5), normal=(0, 0, 1), material=brick())
+    Pyramid(position=(1.5, 0, -5), size=(1.7, 1.7, 1.7), material=diamond())
 )
 
+# Reflectivas
 rayTracer.scene.append(
-    Disk(position=(0, 2, -5), normal=(0, 1, -0.1), radius=1, material=mirror())
-)
-rayTracer.scene.append(
-    Disk(position=(0, -2, -5), normal=(0, 1, 0.1), radius=1, material=mirror())
+    Pyramid(position=(-0.3, -0.1, -5), size=(1.4, 1.5, 1.4), material=soapy())
 )
 
+# Opacas
 rayTracer.scene.append(
-    AABB(position=(0, 1.2, -5), size=(1, 1, 1), material=pink())
+    Pyramid(position=(-2, -0.4, -5), size=(1, 1, 1), material=pink())
 )
-rayTracer.scene.append(
-    AABB(position=(0, 0, -5), size=(1, 1, 1), material=purple())
-)
-rayTracer.scene.append(
-    AABB(position=(0, -1.2, -5), size=(1, 1, 1), material=blue())
-)
-
 
 rayTracer.lights.append(
     AmbientLight(intensity=0.7)
