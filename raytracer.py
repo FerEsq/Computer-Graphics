@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 29.09.2023
-              Modificado el 06.10.2023
+              Modificado el 12.10.2023
  '''
 
 import pygame
@@ -14,8 +14,8 @@ from lights import *
 from rt import *
 from materials import *
 
-width = 300
-height = 300
+width = 50
+height = 50
 
 pygame.init()
 
