@@ -4,11 +4,11 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 29.09.2023
-              Modificado el 12.10.2023
+              Modificado el 18.10.2023
  '''
 
 import mathLibrary as ml
-from math import tan, pi, atan2, acos
+from math import tan, pi, atan2, acos, sqrt
 import numpy as np
 
 class Shape:
@@ -207,7 +207,6 @@ class Triangle(Shape):
         self.vertices = vertices
 
     def intersect(self, origin, direction):
-        # Calculate the normal of the triangle
         edge1 = ml.twoVecSubstraction(self.vertices[1], self.vertices[0])
         edge2 = ml.twoVecSubstraction(self.vertices[2], self.vertices[0])
         normal = ml.twoVecCross(edge1, edge2)
@@ -225,7 +224,6 @@ class Triangle(Shape):
 
         point = ml.twoVecSum(origin, ml.valVecMultiply(t, direction))
 
-        # Check if the point is inside the triangle
         edge0 = ml.twoVecSubstraction(self.vertices[0], self.vertices[2])
         edge1 = ml.twoVecSubstraction(self.vertices[1], self.vertices[0])
         edge2 = ml.twoVecSubstraction(self.vertices[2], self.vertices[1])
@@ -240,7 +238,6 @@ class Triangle(Shape):
             w = ml.twoVecDot(edge2, ml.twoVecSubstraction(point, self.vertices[1]))
             det = u + v + w
 
-            # Calculate barycentric coordinates
             u = u / det
             v = w / det
 
@@ -258,7 +255,6 @@ class Triangle(Shape):
         return None
 
     def normal(self, point):
-        # The normal of a triangle is constant
         edge1 = self.vertices[1] - self.vertices[0]
         edge2 = self.vertices[2] - self.vertices[0]
         normal = ml.twoVecCross(edge1, edge2)
@@ -278,7 +274,6 @@ class Pyramid(Shape):
         half_height = height / 2
         half_depth = depth / 2
 
-        # Define the vertices of the pyramid with the tip pointing up
         vertices = [
             ml.twoVecSum(position, (half_width, -half_height, half_depth)),
             ml.twoVecSum(position, (-half_width, -half_height, half_depth)),
@@ -287,7 +282,6 @@ class Pyramid(Shape):
             ml.twoVecSum(position, (0, half_height, 0))
         ]
 
-        # Create triangles for the pyramid's faces
         self.triangles = [
             Triangle((vertices[0], vertices[1], vertices[4]), material),
             Triangle((vertices[1], vertices[2], vertices[4]), material),
@@ -318,8 +312,58 @@ class Pyramid(Shape):
             return None
 
     def normal(self, point):
-        # Calculate the normal as the average of the triangle normals
         normal_sum = (0.0, 0.0, 0.0)
         for triangle in self.triangles:
             normal_sum += triangle.normal(point)
         return normal_sum / len(self.triangles)
+
+
+class Cylinder(Shape):
+    def __init__(self, position, size, material):
+        super().__init__(position, material)
+        radius = size[0]
+        height = size[1]
+
+        self.radius = radius
+        self.height = height
+
+    def intersect(self, origin, direction):
+        L = ml.twoVecSubstraction(origin, self.position)
+        a = direction[0] * direction[0] + direction[2] * direction[2]
+        b = 2 * (L[0] * direction[0] + L[2] * direction[2])
+        c = L[0] * L[0] + L[2] * L[2] - self.radius * self.radius
+
+        discriminant = b * b - 4 * a * c
+
+        if discriminant < 0:
+            return None
+
+        t1 = (-b - sqrt(discriminant)) / (2 * a)
+        t2 = (-b + sqrt(discriminant)) / (2 * a)
+
+        if t1 > t2:
+            t1, t2 = t2, t1
+
+        y1 = L[1] + t1 * direction[1]
+        y2 = L[1] + t2 * direction[1]
+
+        if (y1 < 0 and y2 < 0) or (y1 > self.height and y2 > self.height):
+            return None
+
+        t = t1 if 0 <= y1 <= self.height else t2
+        point = ml.twoVecSum(origin, ml.valVecMultiply(t, direction))
+
+        if 0 <= y1 <= self.height:
+            normal = ml.vecNorm(ml.twoVecSubstraction(point, ml.twoVecSum(self.position, (0, 0, 0))))
+        else:
+            normal = ml.vecNorm(ml.twoVecSubstraction(point, ml.twoVecSum(self.position, (0, self.height, 0))))
+
+        return Intercept(distance=t, point=point, normal=normal, obj=self, textureCoordinates=None)
+
+    def normal(self, point):
+        if point[1] <= 0:
+            return ml.vecNorm(ml.twoVecSubstraction(point, ml.twoVecSum(self.position, (0, 0, 0))))
+        elif point[1] >= self.height:
+            return ml.vecNorm(ml.twoVecSubstraction(point, ml.twoVecSum(self.position, (0, self.height, 0))))
+        else:
+            return ml.vecNorm(ml.twoVecSubstraction(point, ml.twoVecSum(self.position, (0, point[1], 0))))

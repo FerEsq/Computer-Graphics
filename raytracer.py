@@ -14,8 +14,8 @@ from lights import *
 from rt import *
 from materials import *
 
-width = 50
-height = 50
+width = 350
+height = 350
 
 pygame.init()
 
@@ -23,23 +23,13 @@ screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.HWAC
 screen.set_alpha(None)
 
 rayTracer = Raytracer(screen)
-rayTracer.environmentMap = pygame.image.load("maps/map2.jpg")
+#rayTracer.environmentMap = pygame.image.load("maps/map2.jpg")
 rayTracer.rtClearColor(0.25, 0.25, 0.25)
 rayTracer.rtColor(1, 1, 1)
 
-# Transparentes
+# Cilindro
 rayTracer.scene.append(
-    Pyramid(position=(1.5, 0, -5), size=(1.7, 1.7, 1.7), material=diamond())
-)
-
-# Reflectivas
-rayTracer.scene.append(
-    Pyramid(position=(-0.3, -0.1, -5), size=(1.4, 1.5, 1.4), material=soapy())
-)
-
-# Opacas
-rayTracer.scene.append(
-    Pyramid(position=(-2, -0.4, -5), size=(1, 1, 1), material=pink())
+    Cylinder(position=(0, -2, -7), size=(1, 1), material=purple())
 )
 
 rayTracer.lights.append(
