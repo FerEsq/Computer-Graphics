@@ -130,7 +130,7 @@ class PointLight(Light):
     def getDiffuseColor(self, intercept):
         direction = ml.twoVecSubstraction(self.position, intercept.point)
         radius = ml.vecNormSimple(direction)
-        direction = direction / radius
+        direction = ml.vecNorm(direction)
 
         intensity = ml.twoVecDot(intercept.normal, direction) * self.intensity
         intensity *= 1 - intercept.obj.material.Ks
@@ -144,7 +144,7 @@ class PointLight(Light):
     def getSpecularColor(self, intercept, viewPosition):
         direction = ml.twoVecSubstraction(self.position, intercept.point)
         radius = ml.vecNormSimple(direction)
-        direction = direction / radius
+        direction = ml.vecNorm(direction)
 
         reflectDirection = reflect(intercept.normal, direction)
 
