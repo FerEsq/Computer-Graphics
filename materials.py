@@ -74,7 +74,7 @@ def studio():
     return Material(spec=256, Ks=0.01, texture=pygame.image.load("maps/studio.jpg"))
 
 def soapy():
-    return Material(spec=64, Ks=0.2, type=TRANSPARENT, texture=pygame.image.load("maps/soapy.jpg"))
+    return Material(spec=64, Ks=0.2, type=REFLECTIVE, texture=pygame.image.load("maps/soapy.jpg"))
 
 def electric():
     return Material(spec=64, Ks=0.2, type=REFLECTIVE, texture=pygame.image.load("maps/electric.jpg"))
