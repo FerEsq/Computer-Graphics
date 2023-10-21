@@ -15,8 +15,8 @@ from lights import *
 from materials import *
 from rt import *
 
-width = 350
-height = 350
+width = 600
+height = 600
 
 pygame.init()
 
@@ -24,13 +24,15 @@ screen = pygame.display.set_mode((width, height), pygame.DOUBLEBUF | pygame.HWAC
 screen.set_alpha(None)
 
 rayTracer = Raytracer(screen)
-#rayTracer.environmentMap = pygame.image.load("maps/map2.jpg")
 rayTracer.rtClearColor(0.5, 0.9, 0.9)
+#rayTracer.rtClearColor(0.2, 0.8, 0.8)
 rayTracer.rtColor(1, 1, 1)
+
+#Suelo
+rayTracer.scene.append(Plane(position=(0, -4, 0), normal=(0, 1, -0.2), material=floor()))
 
 #Esferas
 rayTracer.scene.append(Sphere(position = (-0.5, -0.3, -4.5), radius = 0.35, material = diamond()))
-#rayTracer.scene.append(Sphere(position = (0.7, -0.7, -6), radius = 0.40, material = mirror()))
 
 # Cilindros
 rayTracer.scene.append(Cylinder(position=(0, -1, -5), size=(1.2, 0.4), material=pink()))
@@ -57,19 +59,10 @@ rayTracer.scene.append(Disk(position=(2, 1.5, -5), normal=(0, 0, 1), radius=0.5,
 
 #Ilumniacion
 rayTracer.lights.append(AmbientLight(intensity=0.9))
-#rayTracer.lights.append(PointLight(position=(0, 0, 1), intensity=30, color=(1, 1, 1)))
-#rayTracer.lights.append(DirectionalLight(direction=(0, -0.2, 1), intensity=1, color=(1, 0, 1)))
-
-
 rayTracer.lights.append(DirectionalLight(direction=(-0.5, -0.5, 1), intensity=0.7, color=(1, 1, 1)))
 rayTracer.lights.append(DirectionalLight(direction=(2, -0.5, 1), intensity=0.7, color=(1, 1, 1)))
 rayTracer.lights.append(DirectionalLight(direction=(1, 2, 1), intensity=0.7, color=(1, 1, 1)))
-rayTracer.lights.append(PointLight(position=(0.25, 1, -3), intensity=0.5))
-
-'''
-rayTracer.lights.append(DirectionalLight(direction=(1, 2, 1), intensity=0.7, color=(1, 1, 1)))
-rayTracer.lights.append(PointLight(position=(2.5, -1, -5), intensity=1, color=(1, 1, 1)))
-'''
+rayTracer.lights.append(PointLight(position=(0.25, 1, -3), intensity=1))
 
 rayTracer.rtClear()
 rayTracer.rtRender()

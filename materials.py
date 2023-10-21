@@ -50,13 +50,13 @@ def blue():
     return Material(diffuse=(0.7, 0.9, 0.9), spec=64, Ks=0.15, type=OPAQUE, texture=pygame.image.load("maps/blue.jpg"))
 
 def ceiling():
-    return Material(diffuse=(0.7, 0.7, 0.7), spec=64, Ks=0.15, type=REFLECTIVE)
+    return Material(diffuse=(0.47, 0.84, 0.82), spec=64, Ks=0.15, type=REFLECTIVE)
 
 def wall():
     return Material(diffuse=(0.1, 0.4, 0.1))
 
 def floor():
-    return Material(diffuse=(0.8, 0.9, 0.6))
+    return Material(diffuse=(0.5, 0.7, 0.7), spec=8, Ks=0.01)
 
 def glass():
     return Material(diffuse=(1.0, 0.7, 0.9), spec=64, Ks=0.15, ior=1.5, type=TRANSPARENT)
@@ -74,7 +74,7 @@ def studio():
     return Material(spec=256, Ks=0.01, texture=pygame.image.load("maps/studio.jpg"))
 
 def soapy():
-    return Material(spec=64, Ks=0.2, type=REFLECTIVE, texture=pygame.image.load("maps/soapy.jpg"))
+    return Material(spec=64, Ks=0.2, type=TRANSPARENT, texture=pygame.image.load("maps/soapy.jpg"))
 
 def electric():
     return Material(spec=64, Ks=0.2, type=REFLECTIVE, texture=pygame.image.load("maps/electric.jpg"))
