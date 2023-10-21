@@ -22,8 +22,23 @@ class Material:
         self.type = type
         self.texture = texture
 
+def paint():
+    return Material(diffuse=(0.0, 0.6, 0.7), spec=64, Ks=0.15, type=OPAQUE, texture=pygame.image.load("maps/paint.jpg"))
+
+def yellow():
+    return Material(diffuse=(1.0, 0.8, 0.5), spec=8, Ks=0.01)
+
+def aqua():
+    return Material(diffuse=(0.2, 0.8, 0.8), spec=8, Ks=0.01)
+
+def turquoise():
+    return Material(diffuse=(0.0, 0.6, 0.7), spec=8, Ks=0.01)
+
 def white():
     return Material(diffuse=(1.0, 1.0, 1.0), spec=8, Ks=0.01)
+    
+def pinkMirror():
+    return Material(diffuse=(1.0, 0.7, 0.9), spec=64, Ks=0.2, type=REFLECTIVE)
 
 def pink():
     return Material(diffuse=(1.0, 0.7, 0.9), spec=256, Ks=0.5)
@@ -44,7 +59,7 @@ def floor():
     return Material(diffuse=(0.8, 0.9, 0.6))
 
 def glass():
-    return Material(diffuse=(0.8, 0.8, 0.8), spec=64, Ks=0.15, ior=1.5, type=TRANSPARENT)
+    return Material(diffuse=(1.0, 0.7, 0.9), spec=64, Ks=0.15, ior=1.5, type=TRANSPARENT)
 
 def diamond():
     return Material(diffuse=(1, 1, 1), spec=128, Ks=0.2, ior=2.417, type=TRANSPARENT)
@@ -59,7 +74,7 @@ def studio():
     return Material(spec=256, Ks=0.01, texture=pygame.image.load("maps/studio.jpg"))
 
 def soapy():
-    return Material(spec=64, Ks=0.2, type=REFLECTIVE, texture=pygame.image.load("maps/soapy.jpg"))
+    return Material(spec=64, Ks=0.2, type=TRANSPARENT, texture=pygame.image.load("maps/soapy.jpg"))
 
 def electric():
     return Material(spec=64, Ks=0.2, type=REFLECTIVE, texture=pygame.image.load("maps/electric.jpg"))

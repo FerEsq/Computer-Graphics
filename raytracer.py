@@ -8,11 +8,12 @@
  '''
 
 import pygame
+from pygame.locals import *
 
 from figures import *
 from lights import *
-from rt import *
 from materials import *
+from rt import *
 
 width = 350
 height = 350
@@ -27,15 +28,44 @@ rayTracer = Raytracer(screen)
 rayTracer.rtClearColor(0.5, 0.9, 0.9)
 rayTracer.rtColor(1, 1, 1)
 
-rayTracer.scene.append(Sphere(position = (-0.5, -0.3, -4.5), radius = 0.35, material = mirror()))
+#Esferas
+rayTracer.scene.append(Sphere(position = (-0.5, -0.3, -4.5), radius = 0.35, material = diamond()))
+rayTracer.scene.append(Sphere(position = (0.7, -0.7, -3), radius = 0.20, material = mirror()))
 
-# Cilindro
+# Cilindros
 rayTracer.scene.append(Cylinder(position=(0, -1, -5), size=(1.2, 0.4), material=pink()))
 rayTracer.scene.append(Cylinder(position=(0.7, -0.7, -6), size=(0.4, 0.8), material=pink()))
 
+#Piramides
+rayTracer.scene.append(Pyramid(position=(-0.9, -0.8, -3.6), size=(0.7, 0.7, 0.7), material=paint()))
+
+#Ortedros
+rayTracer.scene.append(AABB(position=(1.8, -0.5, -7), size=(1.5, 1.8, 1), material=turquoise()))
+rayTracer.scene.append(AABB(position=(-2.5, 0, -7), size=(0.8, 3, 1), material=yellow()))
+rayTracer.scene.append(AABB(position=(-1.8, -0.65, -7), size=(0.7, 1.7, 1), material=yellow()))
+rayTracer.scene.append(AABB(position=(-1.2, -0.9, -7), size=(0.7, 1, 1), material=yellow()))
+
+#Discos
+rayTracer.scene.append(Disk(position=(0.5, 1.5, -6), normal=(0, 0, 1), radius=0.9, material=yellow()))
+rayTracer.scene.append(Disk(position=(0.42, 1.32, -5), normal=(0, 0, 1), radius=0.4, material=white()))
+rayTracer.scene.append(Disk(position=(-0.7, 1.9, -5), normal=(0, 0, 1), radius=0.3, material=white()))
+
+#Ilumniacion escena
 rayTracer.lights.append(AmbientLight(intensity=0.9))
-rayTracer.lights.append(DirectionalLight(direction=(-0.5, -1, 1), intensity=0.7, color=(1, 1, 1)))
+rayTracer.lights.append(DirectionalLight(direction=(-0.5, -0.5, 1), intensity=0.7, color=(1, 1, 1)))
+rayTracer.lights.append(DirectionalLight(direction=(2, -0.5, 1), intensity=0.7, color=(1, 1, 1)))
+#rayTracer.lights.append(DirectionalLight(direction=(0.7, -0.7, 5), intensity=0.7, color=(1, 1, 1)))
+#rayTracer.lights.append(PointLight(position=(1.8, -0.5, -7), intensity=1, color=(1, 1, 1)))
+#rayTracer.lights.append(DirectionalLight(direction=(1.8, -0.5, 1), intensity=0.7, color=(1, 1, 1)))
+
+
+#Escalera
+
+
+'''
+rayTracer.lights.append(DirectionalLight(direction=(1, 2, 1), intensity=0.7, color=(1, 1, 1)))
 rayTracer.lights.append(PointLight(position=(2.5, -1, -5), intensity=1, color=(1, 1, 1)))
+'''
 
 rayTracer.rtClear()
 rayTracer.rtRender()
@@ -48,9 +78,9 @@ while isRunning:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 isRunning = False
-'''
+
 rect = pygame. Rect(0, 0, width, height)
 sub = screen.subsurface(rect)
 pygame.image.save(sub, "scene.jpg")
-'''
+
 pygame.quit()

@@ -6,8 +6,10 @@
  * Historial: Finalizado el 29.09.2023
  '''
 
+from math import acos, asin, cos, sin
+
 import mathLibrary as ml
-from math import acos, asin, sin, cos
+
 
 def reflect(normal, direction):
     reflectValue = [2 * ml.twoVecDot(normal, direction) * n - d for n, d in zip(normal, direction)]
