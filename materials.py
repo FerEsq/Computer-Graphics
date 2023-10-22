@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode
  * Historial: Finalizado el 12.09.2023
-              Modificado el 06.10.2023
+              Modificado el 22.10.2023
  '''
 
 import pygame
@@ -29,10 +29,10 @@ def yellow():
     return Material(diffuse=(1.0, 0.8, 0.5), spec=8, Ks=0.01)
 
 def aqua():
-    return Material(diffuse=(0.2, 0.8, 0.8), spec=8, Ks=0.01)
+    return Material(diffuse=(0.5, 0.9, 0.9), spec=64, Ks=0.2, type=REFLECTIVE)
 
 def turquoise():
-    return Material(diffuse=(0.0, 0.6, 0.7), spec=8, Ks=0.01)
+    return Material(diffuse=(0.0, 0.6, 0.7), spec=64, Ks=0.2, type=REFLECTIVE)
 
 def white():
     return Material(diffuse=(1.0, 1.0, 1.0), spec=8, Ks=0.01)
