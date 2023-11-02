@@ -13,7 +13,7 @@ from pygame.locals import *
 from renderer import Renderer
 from model import Model
 from shaders import *
-
+from obj import Obj
 
 width = 960
 height = 540
@@ -24,37 +24,49 @@ clock = pygame.time.Clock()
 
 renderer = Renderer(screen)
 renderer.setShader(vertex_shader, fragment_shader)
-# x, y, z, r, g, b
-triangleData = [
-    -0.5, -0.5, 0.0, 1.0, 0.0, 0.0,
-    0.0, 0.5, 0.0, 0.0, 1.0, 0.0,
-    0.5, -0.5, 0.0, 0.0, 0.0, 1.0,
-]
-triangleModel = Model(triangleData)
-triangleModel.position.z = -5
-triangleModel.scale = glm.vec3(3, 3, 3)
-renderer.scene.append(triangleModel)
+
+obj = Obj("models/koala.obj")
+
+modelList = []
+modeldata = []
+
+for face in obj.faces:
+
+    for vertexInfo in face:
+        vertexID, texcoordID, normalID = vertexInfo
+
+        vertex = obj.vertices[vertexID - 1]
+        normal = obj.normals[normalID - 1]
+
+        modeldata.extend(vertex + normal)
+
+    model = Model(modeldata)
+    modelList.append(model)
+
+model = Model(modeldata)
+model.position.z = -15
+model.position.y = 0.5
+model.scale = glm.vec3(0.03, 0.03, 0.03)
+
+renderer.scene.append(model)
 
 isRunning = True
 while isRunning:
     deltaTime = clock.tick(60) / 1000.0
-    renderer.elapsedTime += deltaTime
     keys = pygame.key.get_pressed()
 
-    if keys[K_RIGHT]:
+    if keys[pygame.K_RIGHT]:
         renderer.clearColor[0] += deltaTime
-    if keys[K_LEFT]:
+    if keys[pygame.K_LEFT]:
         renderer.clearColor[0] -= deltaTime
-    if keys[K_UP]:
+    if keys[pygame.K_UP]:
         renderer.clearColor[1] += deltaTime
-    if keys[K_DOWN]:
+    if keys[pygame.K_DOWN]:
         renderer.clearColor[1] -= deltaTime
-    if keys[K_SPACE]:
+    if keys[pygame.K_z]:
         renderer.clearColor[2] += deltaTime
-    if keys[K_LSHIFT]:
+    if keys[pygame.K_x]:
         renderer.clearColor[2] -= deltaTime
-
-    triangleModel.rotation.y += deltaTime * 50
 
     # Handle quit
     for event in pygame.event.get():
