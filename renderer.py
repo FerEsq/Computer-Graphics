@@ -4,6 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode, pygame, OpenGL
  * Historial: Finalizado el 26.10.2023
+              Modificado el 01.11.2023
  '''
 
 import glm
@@ -17,15 +18,15 @@ class Renderer(object):
         self.clearColor = [0.0, 0.0, 0.0, 1.0]
         _, _, self.width, self.height = screen.get_rect()
         self.activeShader = None
-        # View Matrix
+        #View Matrix
         self.cameraPosition = glm.vec3(0.0, 0.0, 0.0)
         self.cameraRotation = glm.vec3(0.0, 0.0, 0.0)
-        # Projection Matrix
+        #Projection Matrix
         self.projectionMatrix = glm.perspective(
-            glm.radians(60.0),  # FOV
-            self.width / self.height,  # Aspect Ratio
-            0.1,  # Near Plane
-            1000.0  # Far Plane
+            glm.radians(60.0),  #FOV
+            self.width / self.height,  #Aspect Ratio
+            0.1,  #Near Plane
+            1000.0  #Far Plane
         )
         self.elapsedTime = 0.0
 
@@ -57,7 +58,7 @@ class Renderer(object):
 
         if self.activeShader is not None:
             glUseProgram(self.activeShader)
-            # Set uniforms
+            #Set uniforms
             glUniformMatrix4fv(
                 glGetUniformLocation(self.activeShader, "viewMatrix"),
                 1,
