@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode, pygame, OpenGL
  * Historial: Finalizado el 26.10.2023
-              Modificado el 01.11.2023
+              Modificado el 04.11.2023
  '''
 
 import glm
@@ -25,10 +25,19 @@ class Model(object):
         self.textureData = None
         self.textureBuffer = None
 
+        self.noiseTextureSurface = None
+        self.noiseTextureData = None
+        self.noiseTextureBuffer = None
+
     def loadTexture(self, path):
         self.textureSurface = pygame.image.load(path)
         self.textureData = pygame.image.tostring(self.textureSurface, "RGB", True)
         self.textureBuffer = glGenTextures(1)
+
+    def loadNoiseTexture(self, path):
+        self.noiseTextureSurface = pygame.image.load(path)
+        self.noiseTextureData = pygame.image.tostring(self.noiseTextureSurface, "RGB", True)
+        self.noiseTextureBuffer = glGenTextures(1)
 
     def getModelMatrix(self):
         identity = glm.mat4(1.0)
@@ -85,6 +94,22 @@ class Model(object):
         )
         glGenerateTextureMipmap(self.textureBuffer)
 
+        #NoiseTexture
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, self.noiseTextureBuffer)
+        glTexImage2D(
+            GL_TEXTURE_2D,  #Texture Type
+            0,  #Position
+            GL_RGB,  #Format
+            self.noiseTextureSurface.get_width(),  #Width
+            self.noiseTextureSurface.get_height(),  #Height
+            0,  #Border
+            GL_RGB,  #Format
+            GL_UNSIGNED_BYTE,  #Type
+            self.noiseTextureData  #Data
+        )
+        glGenerateTextureMipmap(self.noiseTextureBuffer)
+
         #Normals
         glVertexAttribPointer(2, 
                               3, 
@@ -92,6 +117,8 @@ class Model(object):
                               GL_FALSE, 
                               4 * 8, 
                               ctypes.c_void_p(4 * 5))
+        
+        glEnableVertexAttribArray(2)
 
         #Draw
         glDrawArrays(GL_TRIANGLES, 0, len(self.vertexBuffer) // 8)
