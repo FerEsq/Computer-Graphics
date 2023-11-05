@@ -1,5 +1,5 @@
-# Ejercicio-7
-Branch para el ejercicio 7 del curso.
+# Lab-4
+Branch para el laboratorio 4 del curso.
 
-## Resultado final
+## Primer shader
 <img src="output.png" alt="Texto alternativo" width="450" height="250">
