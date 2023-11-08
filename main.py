@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode, pygame, OpenGL
  * Historial: Finalizado el 26.10.2023
-              Modificado el 04.11.2023
+              Modificado el 08.11.2023
  '''
 
 import pygame
@@ -66,7 +66,7 @@ model.position.x = -0.3
 model.rotation.y = 120
 model.scale = glm.vec3(1.20, 1.20, 1.20)
 renderer.scene.append(model)
-renderer.lightIntensity = 1.0
+renderer.lightIntensity = 0.8
 renderer.dirLight = glm.vec3(0.0, 0.0, -1.0)
 
 isRunning = True
@@ -125,6 +125,9 @@ while isRunning:
             if event.key == pygame.K_7:
                 print("Distorsioned")
                 renderer.setShader(vertex_shader, distorsioned_fragment_shader)
+            if event.key == pygame.K_8:
+                print("Outline")
+                renderer.setShader(vertex_shader, outline_fragment_shader)
 
     renderer.render()
     pygame.display.flip()

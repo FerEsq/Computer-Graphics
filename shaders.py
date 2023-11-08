@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode, pygame, OpenGL
  * Historial: Finalizado el 26.10.2023
-              Modificado el 04.11.2023
+              Modificado el 08.11.2023
  '''
 
 # Graphics Library Shader Language: GLSL
@@ -209,7 +209,7 @@ sparkling_fragment_shader = """
         vec4 originalColor = texture(tex, UVs);
 
         // Agregar un movimiento cíclico a los colores usando el tiempo
-        float cycleSpeed = 2.0; // Ajusta la velocidad del ciclo
+        float cycleSpeed = 4.0; // Ajusta la velocidad del ciclo
         originalColor = originalColor * (1.0 + 0.5 * sin(time * cycleSpeed));
 
         fragColor = originalColor * vec4(vec3(1.0), 1.0) * intensity;
@@ -221,22 +221,65 @@ distorsioned_fragment_shader = """
 
     layout (binding = 0) uniform sampler2D tex;
 
-    uniform vec3 dirLight;
-    uniform float lightIntensity;
-    uniform float time;
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    uniform float time; // Para controlar la animación del agua
+
+    void main() {
+        // Factor de distorsión para el agua
+        float distortionFactor = 0.02;
+        
+        // Coordenadas de textura distorsionadas
+        vec2 distortedUVs = UVs + vec2(
+            sin(UVs.y * 10.0 + time) * distortionFactor,
+            cos(UVs.x * 10.0 + time) * distortionFactor
+        );
+        
+        // Mapeo de la textura distorsionada
+        vec4 waterColor = texture(tex, distortedUVs);
+        
+        // Ajustar la transparencia para el efecto de ondulación
+        waterColor.a = 0.7 + sin(UVs.x * 10.0 + time) * 0.1;
+        
+        fragColor = waterColor;
+    }
+"""
+
+outline_fragment_shader = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
 
     in vec2 UVs;
     in vec3 normal;
     out vec4 fragColor;
 
+    uniform vec3 outlineColor; // Color del contorno
+
     void main() {
-        float intensity = dot(normal, -dirLight) * lightIntensity;
-
-        // Agregar un efecto de ondulación (movimiento tipo agua) a los colores
-        float waveFrequency = 5.0; // Ajusta la frecuencia de las ondas
-        float waveAmplitude = 0.1; // Ajusta la amplitud de las ondas
-        vec2 distortedUV = UVs + vec2(waveAmplitude * sin(UVs.y * waveFrequency + time), 0.0);
-
-        fragColor = texture(tex, distortedUV) * intensity;
+        // Umbral para la detección de bordes (ajusta según sea necesario)
+        float edgeThreshold = 0.1;
+        
+        // Calcula la diferencia entre los píxeles vecinos
+        vec4 centerPixel = texture(tex, UVs);
+        vec4 upPixel = texture(tex, UVs + vec2(0.0, 1.0) / textureSize(tex, 0));
+        vec4 downPixel = texture(tex, UVs - vec2(0.0, 1.0) / textureSize(tex, 0));
+        vec4 leftPixel = texture(tex, UVs - vec2(1.0, 0.0) / textureSize(tex, 0));
+        vec4 rightPixel = texture(tex, UVs + vec2(1.0, 0.0) / textureSize(tex, 0));
+        
+        float edgeValue = length(centerPixel.rgb - upPixel.rgb) +
+                        length(centerPixel.rgb - downPixel.rgb) +
+                        length(centerPixel.rgb - leftPixel.rgb) +
+                        length(centerPixel.rgb - rightPixel.rgb);
+        
+        // Aplica el color del contorno si se detecta un borde
+        if (edgeValue > edgeThreshold) {
+            fragColor = vec4(outlineColor, 1.0);
+        } else {
+            fragColor = centerPixel;
+        }
     }
+
 """
