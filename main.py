@@ -27,7 +27,7 @@ renderer = Renderer(screen)
 renderer.setShader(vertex_shader, fragment_shader)
 
 #Model loading
-obj = Obj("models/koala.obj")
+obj = Obj("models/ducky.obj")
 objData = []
 for face in obj.faces:
     if len(face) == 3:
@@ -58,13 +58,15 @@ for face in obj.faces:
 
 
 model = Model(objData)
-model.loadTexture("textures/koala.bmp")
+model.loadTexture("textures/ducky.bmp")
 model.loadNoiseTexture("textures/purple.jpg")
-model.position.z = -6
-model.position.y = 0
-model.scale = glm.vec3(0.01, 0.01, 0.01)
+model.position.z = -2
+model.position.y = -2
+model.position.x = -0.3
+model.rotation.y = 120
+model.scale = glm.vec3(1.20, 1.20, 1.20)
 renderer.scene.append(model)
-renderer.lightIntensity = 5.0
+renderer.lightIntensity = 1.0
 renderer.dirLight = glm.vec3(0.0, 0.0, -1.0)
 
 isRunning = True
