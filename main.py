@@ -117,8 +117,14 @@ while isRunning:
                 print("Multicolor")
                 renderer.setShader(vertex_shader, multicolor_fragment_shader)
             if event.key == pygame.K_5:
-                print("Noise")
-                renderer.setShader(vertex_shader, noise_fragment_shader)
+                print("Party")
+                renderer.setShader(vertex_shader, party_fragment_shader)
+            if event.key == pygame.K_6:
+                print("Sparkling")
+                renderer.setShader(vertex_shader, sparkling_fragment_shader)
+            if event.key == pygame.K_7:
+                print("Distorsioned")
+                renderer.setShader(vertex_shader, distorsioned_fragment_shader)
 
     renderer.render()
     pygame.display.flip()

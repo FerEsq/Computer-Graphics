@@ -160,3 +160,83 @@ noise_fragment_shader = """
     }
 
 """
+
+party_fragment_shader = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
+
+    uniform vec3 dirLight;
+    uniform float lightIntensity;
+    uniform float time;
+
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    void main() {
+        float intensity = dot(normal, -dirLight) * lightIntensity;
+
+        // Definir los colores tricolor
+        vec3 pink = vec3(1.0, 0.0, 0.5);
+        vec3 purple = vec3(0.5, 0.0, 0.5);
+        vec3 cyan = vec3(0.0, 0.5, 0.7);
+
+        // Calcular el color tricolor basado en el tiempo
+        vec3 tricolorColor = mix(pink, mix(purple, cyan, fract(time)), fract(time + 0.3333));
+
+        fragColor = vec4(tricolorColor, 1.0) * intensity;
+    }
+"""
+
+sparkling_fragment_shader = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
+
+    uniform vec3 dirLight;
+    uniform float lightIntensity;
+    uniform float time;
+
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    void main() {
+        float intensity = dot(normal, -dirLight) * lightIntensity;
+
+        // Muestrear la textura original en función de las coordenadas UV
+        vec4 originalColor = texture(tex, UVs);
+
+        // Agregar un movimiento cíclico a los colores usando el tiempo
+        float cycleSpeed = 2.0; // Ajusta la velocidad del ciclo
+        originalColor = originalColor * (1.0 + 0.5 * sin(time * cycleSpeed));
+
+        fragColor = originalColor * vec4(vec3(1.0), 1.0) * intensity;
+    }
+"""
+
+distorsioned_fragment_shader = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
+
+    uniform vec3 dirLight;
+    uniform float lightIntensity;
+    uniform float time;
+
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    void main() {
+        float intensity = dot(normal, -dirLight) * lightIntensity;
+
+        // Agregar un efecto de ondulación (movimiento tipo agua) a los colores
+        float waveFrequency = 5.0; // Ajusta la frecuencia de las ondas
+        float waveAmplitude = 0.1; // Ajusta la amplitud de las ondas
+        vec2 distortedUV = UVs + vec2(waveAmplitude * sin(UVs.y * waveFrequency + time), 0.0);
+
+        fragColor = texture(tex, distortedUV) * intensity;
+    }
+"""
