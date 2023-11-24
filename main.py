@@ -4,11 +4,12 @@
  * Lenguaje: Python
  * Recursos: VSCode, pygame, OpenGL
  * Historial: Finalizado el 26.10.2023
-              Modificado el 08.11.2023
+              Modificado el 24.11.2023
  '''
 
 import pygame
 import glm
+import math
 from pygame.locals import *
 
 from renderer import Renderer
@@ -25,6 +26,9 @@ clock = pygame.time.Clock()
 
 renderer = Renderer(screen)
 renderer.setShader(vertex_shader, fragment_shader)
+
+is_dragging = False
+old_position = None
 
 #Model loading function
 def loadModel(objF):
@@ -70,35 +74,32 @@ model.position.y = -2
 model.position.x = -0.3
 model.rotation.y = 120
 model.scale = glm.vec3(1.20, 1.20, 1.20)
+model.lookAt = glm.vec3(model.position.x, model.position.y + 2 , model.position.z)
 renderer.scene.append(model)
+renderer.target = model.lookAt
 
 #Lighting
 renderer.lightIntensity = 0.8
 renderer.dirLight = glm.vec3(0.0, 0.0, -1.0)
 
 isRunning = True
+
+movement_sensitive = 0.1
+sens_x = 1
+sens_y = 0.1
+distance = abs(renderer.cameraPosition.z- model.position.z)
+radius = distance
+zoom_sensitive = 0.5
+angle = 0.0
+
 while isRunning:
     deltaTime = clock.tick(60) / 1000.0
     renderer.elapsedTime += deltaTime
-    keys = pygame.key.get_pressed()
+    #keys = pygame.key.get_pressed()
 
-    if keys[K_RIGHT]:
-        model.rotation.y += deltaTime * 50
-    if keys[K_LEFT]:
-        model.rotation.y -= deltaTime * 50
-    if keys[K_UP]:
-        if (model.rotation.x <= 45):
-            model.rotation.x += deltaTime * 50
-    if keys[K_DOWN]:
-        if (model.rotation.x >= -100):
-            model.rotation.x -= deltaTime * 50
-    if keys[K_PLUS]:
-        if (model.position.z <= 0):
-            model.position.z += 0.1
-    if keys[K_MINUS]:
-        if (model.position.z >= -10):
-            model.position.z -= 0.1
-
+    renderer.cameraPosition.x = math.sin(math.radians(angle)) * radius + model.position.x
+    renderer.cameraPosition.z = math.cos(math.radians(angle)) * radius + model.position.z
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             isRunning = False
@@ -181,6 +182,40 @@ while isRunning:
                 model.scale = glm.vec3(1.5, 1.5, 1.5)
                 renderer.scene.append(model)
 
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1: 
+                is_dragging = True
+                old_position = pygame.mouse.get_pos()
+
+            elif event.button == 4:
+                if radius > distance * 0.5:
+                    radius -= zoom_sensitive             
+
+            elif event.button == 5:
+                if radius < distance * 1.5:
+                    radius += zoom_sensitive
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:  
+                is_dragging = False
+
+        elif event.type == pygame.MOUSEMOTION:
+            if is_dragging:
+                new_position = pygame.mouse.get_pos()
+                deltax = new_position[0] - old_position[0]
+                deltay = new_position[1] - old_position[1]
+                angle += deltax * -sens_x
+
+                if angle > 360:
+                    angle = 0
+
+                if distance > renderer.cameraPosition.y + deltay * -sens_y and distance * -1.5 < renderer.cameraPosition.y + deltay * -sens_y:
+                    renderer.cameraPosition.y += deltay * -sens_y
+
+                old_position = new_position
+            
+
+    renderer.updateViewMatrix()
     renderer.render()
     pygame.display.flip()
 

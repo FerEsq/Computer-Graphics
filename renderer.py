@@ -4,7 +4,7 @@
  * Lenguaje: Python
  * Recursos: VSCode, pygame, OpenGL
  * Historial: Finalizado el 26.10.2023
-              Modificado el 04.11.2023
+              Modificado el 24.11.2023
  '''
 
 import glm
@@ -21,6 +21,7 @@ class Renderer(object):
         #View Matrix
         self.cameraPosition = glm.vec3(0.0, 0.0, 0.0)
         self.cameraRotation = glm.vec3(0.0, 0.0, 0.0)
+        self.target = glm.vec3(0.0, 0.0, 0.0)
         #Projection Matrix
         self.projectionMatrix = glm.perspective(
             glm.radians(60.0),  #FOV
@@ -35,6 +36,13 @@ class Renderer(object):
 
         glEnable(GL_DEPTH_TEST)
         glViewport(0, 0, self.width, self.height)
+
+    def updateViewMatrix(self):
+        self.viewMatrix = glm.lookAt(
+            self.cameraPosition,
+            self.target,
+            glm.vec3(0.0, 1.0, 0.0)
+        )
 
     def getViewMatrix(self):
         identity = glm.mat4(1.0)
