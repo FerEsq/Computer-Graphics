@@ -65,7 +65,7 @@ model.loadTexture("textures/ducky.bmp")
 model.loadNoiseTexture("textures/purple.jpg")
 
 #Model position
-model.position.z = -2
+model.position.z = -2.4
 model.position.y = -2
 model.position.x = -0.3
 model.rotation.y = 120
@@ -126,7 +126,7 @@ while isRunning:
                 model = Model(objData)
                 model.loadTexture("textures/ducky.bmp")
                 model.loadNoiseTexture("textures/purple.jpg")
-                model.position.z = -2
+                model.position.z = -2.4
                 model.position.y = -2
                 model.position.x = -0.3
                 model.rotation.y = 120
@@ -151,16 +151,16 @@ while isRunning:
             if event.key == pygame.K_3:
                 print("A watermelon has enter the scene!")
                 renderer.scene.clear()
-                obj = Obj("models/rock.obj")
+                obj = Obj("models/diamond.obj")
                 objData = loadModel(obj)
                 model = Model(objData)
-                model.loadTexture("textures/rock.png")
+                model.loadTexture("textures/diamond.bmp")
                 model.loadNoiseTexture("textures/purple.jpg")
-                model.position.z = -5
+                model.position.z = -3.5
                 model.position.y = 0
                 model.position.x = 0
-                model.rotation.y = 0
-                model.scale = glm.vec3(0.020,0.020,0.020)
+                model.rotation.x = -90
+                model.scale = glm.vec3(1.20,1.20,1.20)
                 renderer.scene.append(model)
 
             if event.key == pygame.K_4:
