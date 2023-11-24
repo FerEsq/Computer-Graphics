@@ -82,19 +82,22 @@ while isRunning:
     renderer.elapsedTime += deltaTime
     keys = pygame.key.get_pressed()
 
-    if keys[K_SPACE]:
-        renderer.clearColor[2] += deltaTime
-    if keys[K_LSHIFT]:
-        renderer.clearColor[2] -= deltaTime
-
     if keys[K_RIGHT]:
         model.rotation.y += deltaTime * 50
     if keys[K_LEFT]:
         model.rotation.y -= deltaTime * 50
     if keys[K_UP]:
-        model.rotation.x += deltaTime * 50
+        if (model.rotation.x <= 45):
+            model.rotation.x += deltaTime * 50
     if keys[K_DOWN]:
-        model.rotation.x -= deltaTime * 50
+        if (model.rotation.x >= -100):
+            model.rotation.x -= deltaTime * 50
+    if keys[K_PLUS]:
+        if (model.position.z <= 0):
+            model.position.z += 0.1
+    if keys[K_MINUS]:
+        if (model.position.z >= -10):
+            model.position.z -= 0.1
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -141,15 +144,15 @@ while isRunning:
                 model = Model(objData)
                 model.loadTexture("textures/octopus.bmp")
                 model.loadNoiseTexture("textures/purple.jpg")
-                model.position.z = -10
+                model.position.z = -1
                 model.position.y = 0
-                model.position.x = -0.3
+                model.position.x = 0
                 model.rotation.y = 180
-                model.scale = glm.vec3(1.20,1.20,1.20)
+                model.scale = glm.vec3(0.10,0.10,0.10)
                 renderer.scene.append(model)
 
             if event.key == pygame.K_3:
-                print("A watermelon has enter the scene!")
+                print("A shiny diamond has enter the scene!")
                 renderer.scene.clear()
                 obj = Obj("models/diamond.obj")
                 objData = loadModel(obj)
