@@ -24,26 +24,26 @@ pygame.init()
 screen = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
 clock = pygame.time.Clock()
 
-#Music and soun|d effects
+#Music and sound effects
 mii = pygame.mixer.Sound("media/mii.mp3")
 ducky = pygame.mixer.Sound("media/ducky.mp3") 
 octopus = pygame.mixer.Sound("media/octopus.mp3") 
 diamond = pygame.mixer.Sound("media/diamond.mp3") 
 catPlush = pygame.mixer.Sound("media/catPlush.mp3") 
 
-mii.set_volume(0.5)
-ducky.set_volume(0.8)
-octopus.set_volume(0.8)
-diamond.set_volume(0.8)
-catPlush.set_volume(0.8)
+mii.set_volume(0.2)
+ducky.set_volume(0.5)
+octopus.set_volume(0.5)
+diamond.set_volume(0.5)
+catPlush.set_volume(0.5)
 
 mii.play(-1)
 
 renderer = Renderer(screen)
 renderer.setShader(vertex_shader, fragment_shader)
 
-is_dragging = False
-old_position = None
+drag = False
+oldPosition = None
 catModel = False
 actualShader = 0
 
@@ -119,7 +119,7 @@ model.position.y = -2
 model.position.x = -0.3
 model.rotation.y = 120
 model.scale = glm.vec3(1.20, 1.20, 1.20)
-model.lookAt = glm.vec3(model.position.x, model.position.y + 2 , model.position.z)
+model.lookAt = glm.vec3(model.position.x + 0.4, model.position.y + 2 , model.position.z - 2.4)
 renderer.scene.append(model)
 renderer.target = model.lookAt
 
@@ -130,12 +130,12 @@ renderer.dirLight = glm.vec3(0.0, 0.0, -1.0)
 isRunning = True
 
 movement_sensitive = 0.1
-sens_x = 1
-sens_y = 0.1
+sensX = 1
+sensY = 0.1
 distance = abs(renderer.cameraPosition.z- model.position.z)
 radius = distance
-zoom_sensitive = 0.5
-angle = 0.0
+zoomSensitive = 0.5
+angle = 0
 
 printMenu()
 while isRunning:
@@ -225,6 +225,8 @@ while isRunning:
                 model.position.x = -0.3
                 model.rotation.y = 120
                 model.scale = glm.vec3(1.20, 1.20, 1.20)
+                model.lookAt = glm.vec3(model.position.x + 0.4, model.position.y + 2 , model.position.z - 2.4)
+                renderer.target = model.lookAt
                 renderer.scene.append(model)
                 
             if event.key == pygame.K_2:
@@ -237,11 +239,10 @@ while isRunning:
                 model = Model(objData)
                 model.loadTexture("textures/octopus.bmp")
                 model.loadNoiseTexture("textures/purple.jpg")
-                model.position.z = -1
-                model.position.y = 0
-                model.position.x = 0
                 model.rotation.y = 180
-                model.scale = glm.vec3(0.15,0.15,0.15)
+                model.scale = glm.vec3(0.30, 0.30, 0.30)
+                model.lookAt = glm.vec3(model.position.x, model.position.y, model.position.z)
+                renderer.target = model.lookAt
                 renderer.scene.append(model)
 
             if event.key == pygame.K_3:
@@ -255,11 +256,10 @@ while isRunning:
                 model = Model(objData)
                 model.loadTexture("textures/diamond.bmp")
                 model.loadNoiseTexture("textures/purple.jpg")
-                model.position.z = -3.5
-                model.position.y = 0
-                model.position.x = 0
                 model.rotation.x = -90
-                model.scale = glm.vec3(1.20,1.20,1.20)
+                model.scale = glm.vec3(0.8,0.8,0.8)
+                model.lookAt = glm.vec3(model.position.x, model.position.y, model.position.z)
+                renderer.target = model.lookAt
                 renderer.scene.append(model)
 
             if event.key == pygame.K_4:
@@ -273,11 +273,9 @@ while isRunning:
                 model = Model(objData)
                 model.loadTexture("textures/catPlushCalico.bmp")
                 model.loadNoiseTexture("textures/purple.jpg")
-                model.position.z = -1
-                model.position.y = -0.3
-                model.position.x = 0
-                model.rotation.y = 0
-                model.scale = glm.vec3(1.5, 1.5, 1.5)
+                model.scale = glm.vec3(3.5, 3.5, 3.5)
+                model.lookAt = glm.vec3(model.position.x, model.position.y + 0.6, model.position.z)
+                renderer.target = model.lookAt
                 renderer.scene.append(model)
             if (catModel == True):
                 if event.key == pygame.K_9:
@@ -289,35 +287,35 @@ while isRunning:
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: 
-                is_dragging = True
-                old_position = pygame.mouse.get_pos()
+                drag = True
+                oldPosition = pygame.mouse.get_pos()
 
             elif event.button == 4:
                 if radius > distance * 0.5:
-                    radius -= zoom_sensitive             
+                    radius -= zoomSensitive             
 
             elif event.button == 5:
                 if radius < distance * 1.5:
-                    radius += zoom_sensitive
+                    radius += zoomSensitive
 
         elif event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:  
-                is_dragging = False
+                drag = False
 
         elif event.type == pygame.MOUSEMOTION:
-            if is_dragging:
+            if drag:
                 new_position = pygame.mouse.get_pos()
-                deltax = new_position[0] - old_position[0]
-                deltay = new_position[1] - old_position[1]
-                angle += deltax * -sens_x
+                deltax = new_position[0] - oldPosition[0]
+                deltay = new_position[1] - oldPosition[1]
+                angle += deltax * -sensX
 
                 if angle > 360:
                     angle = 0
 
-                if distance > renderer.cameraPosition.y + deltay * -sens_y and distance * -1.5 < renderer.cameraPosition.y + deltay * -sens_y:
-                    renderer.cameraPosition.y += deltay * -sens_y
+                if distance > renderer.cameraPosition.y + deltay * -sensY and distance * -1.5 < renderer.cameraPosition.y + deltay * -sensY:
+                    renderer.cameraPosition.y += deltay * -sensY
 
-                old_position = new_position
+                oldPosition = new_position
             
 
     renderer.updateViewMatrix()
