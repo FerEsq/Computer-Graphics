@@ -20,4 +20,5 @@ Branch para el proyecto 3 del curso.
   ### Movimiento de la cámara
   - Utilice las teclas de flecha para rotar el modelo
   - Utilice las teclas **+** y **-** para alejar y acercar el modelo
+  - Utilice el cursor del mouse para hacer zoom
   - Utilice el mouse para rotar la cámara alrededor del modelo
