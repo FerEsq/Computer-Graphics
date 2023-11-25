@@ -24,11 +24,26 @@ pygame.init()
 screen = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
 clock = pygame.time.Clock()
 
+mii = pygame.mixer.Sound("media/mii.mp3")
+ducky = pygame.mixer.Sound("media/ducky.mp3") 
+octopus = pygame.mixer.Sound("media/octopus.mp3") 
+diamond = pygame.mixer.Sound("media/diamond.mp3") 
+catPlush = pygame.mixer.Sound("media/catPlush.mp3") 
+
+mii.set_volume(0.5)
+ducky.set_volume(0.8)
+octopus.set_volume(0.8)
+diamond.set_volume(0.8)
+catPlush.set_volume(0.8)
+
+mii.play(-1)
+
 renderer = Renderer(screen)
 renderer.setShader(vertex_shader, fragment_shader)
 
 is_dragging = False
 old_position = None
+catModel = False
 
 #Model loading function
 def loadModel(objF):
@@ -123,7 +138,9 @@ while isRunning:
                 renderer.setShader(vertex_shader, outline_fragment_shader)
 
             if event.key == pygame.K_1:
+                catModel = False
                 print("A cute ducky plush has enter the scene!")
+                ducky.play()
                 renderer.scene.clear()
                 obj = Obj("models/ducky.obj")
                 objData = loadModel(obj)
@@ -138,7 +155,9 @@ while isRunning:
                 renderer.scene.append(model)
                 
             if event.key == pygame.K_2:
+                catModel = False
                 print("A cute little octopus has enter the scene!")
+                octopus.play()
                 renderer.scene.clear()
                 obj = Obj("models/octopus.obj")
                 objData = loadModel(obj)
@@ -153,7 +172,9 @@ while isRunning:
                 renderer.scene.append(model)
 
             if event.key == pygame.K_3:
+                catModel = False
                 print("A shiny diamond has enter the scene!")
+                diamond.play()
                 renderer.scene.clear()
                 obj = Obj("models/diamond.obj")
                 objData = loadModel(obj)
@@ -168,7 +189,9 @@ while isRunning:
                 renderer.scene.append(model)
 
             if event.key == pygame.K_4:
+                catModel = True
                 print("A cute kitty plush has enter the scene!")
+                catPlush.play()
                 renderer.scene.clear()
                 obj = Obj("models/catPlush.obj")
                 objData = loadModel(obj)
@@ -181,6 +204,16 @@ while isRunning:
                 model.rotation.y = 0
                 model.scale = glm.vec3(1.5, 1.5, 1.5)
                 renderer.scene.append(model)
+            if (catModel == True):
+                if event.key == pygame.K_8:
+                    catPlush.play()
+                    model.loadTexture("textures/catPlushCalico.bmp")
+                if event.key == pygame.K_9:
+                    catPlush.play()
+                    model.loadTexture("textures/catPlushGray.bmp")
+                if event.key == pygame.K_0:
+                    catPlush.play()
+                    model.loadTexture("textures/catPlushOrange.bmp")
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: 
