@@ -33,7 +33,7 @@ catPlush = pygame.mixer.Sound("media/catPlush.mp3")
 
 mii.set_volume(0.2)
 ducky.set_volume(0.5)
-octopus.set_volume(0.5)
+octopus.set_volume(0.8)
 diamond.set_volume(0.5)
 catPlush.set_volume(0.5)
 
