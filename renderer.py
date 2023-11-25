@@ -74,7 +74,7 @@ class Renderer(object):
                 glGetUniformLocation(self.activeShader, "viewMatrix"),
                 1,
                 GL_FALSE,
-                glm.value_ptr(self.getViewMatrix())
+                glm.value_ptr(self.viewMatrix)
             )
             glUniformMatrix4fv(
                 glGetUniformLocation(self.activeShader, "projectionMatrix"),
