@@ -189,7 +189,36 @@ party_fragment_shader = """
     }
 """
 
+party_fragment_shader_alternative = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
+
+    uniform vec3 dirLight;
+    uniform float lightIntensity;
+    uniform float time;
+
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    void main() {
+        float intensity = dot(normal, -dirLight) * lightIntensity;
+
+        // Definir los colores tricolor
+        vec3 mint = vec3(0.0, 1.0, 0.5);
+        vec3 green = vec3(0.5, 1.0, 0.5);
+        vec3 orange = vec3(1.0, 0.5, 0.3);
+
+        // Calcular el color tricolor basado en el tiempo
+        vec3 tricolorColor = mix(mint, mix(green, orange, fract(time)), fract(time + 0.3333));
+
+        fragColor = vec4(tricolorColor, 1.0) * intensity;
+    }
+"""
+
 sparkling_fragment_shader = """
+
     #version 450 core
 
     layout (binding = 0) uniform sampler2D tex;
@@ -210,6 +239,33 @@ sparkling_fragment_shader = """
 
         // Agregar un movimiento cíclico a los colores usando el tiempo
         float cycleSpeed = 4.0; // Ajusta la velocidad del ciclo
+        originalColor = originalColor * (1.0 + 0.5 * sin(time * cycleSpeed));
+
+        fragColor = originalColor * vec4(vec3(1.0), 1.0) * intensity;
+    }
+"""
+
+sparkling_fragment_shader_alternative = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
+
+    uniform vec3 dirLight;
+    uniform float lightIntensity;
+    uniform float time;
+
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    void main() {
+        float intensity = dot(normal, -dirLight) * lightIntensity;
+
+        // Muestrear la textura original en función de las coordenadas UV
+        vec4 originalColor = texture(tex, UVs);
+
+        // Agregar un movimiento cíclico a los colores usando el tiempo
+        float cycleSpeed = 8.0; // Ajusta la velocidad del ciclo
         originalColor = originalColor * (1.0 + 0.5 * sin(time * cycleSpeed));
 
         fragColor = originalColor * vec4(vec3(1.0), 1.0) * intensity;
@@ -247,6 +303,37 @@ distorsioned_fragment_shader = """
     }
 """
 
+distorsioned_fragment_shader_alternative = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
+
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    uniform float time; // Para controlar la animación del agua
+
+    void main() {
+        // Factor de distorsión para el agua
+        float distortionFactor = 0.05;
+        
+        // Coordenadas de textura distorsionadas
+        vec2 distortedUVs = UVs + vec2(
+            sin(UVs.y * 10.0 + time) * distortionFactor,
+            cos(UVs.x * 10.0 + time) * distortionFactor
+        );
+        
+        // Mapeo de la textura distorsionada
+        vec4 waterColor = texture(tex, distortedUVs);
+        
+        // Ajustar la transparencia para el efecto de ondulación
+        waterColor.a = 0.7 + sin(UVs.x * 10.0 + time) * 0.1;
+        
+        fragColor = waterColor;
+    }
+"""
+
 outline_fragment_shader = """
     #version 450 core
 
@@ -257,6 +344,43 @@ outline_fragment_shader = """
     out vec4 fragColor;
 
     uniform vec3 outlineColor; // Color del contorno
+
+    void main() {
+        // Umbral para la detección de bordes (ajusta según sea necesario)
+        float edgeThreshold = 0.1;
+        
+        // Calcula la diferencia entre los píxeles vecinos
+        vec4 centerPixel = texture(tex, UVs);
+        vec4 upPixel = texture(tex, UVs + vec2(0.0, 1.0) / textureSize(tex, 0));
+        vec4 downPixel = texture(tex, UVs - vec2(0.0, 1.0) / textureSize(tex, 0));
+        vec4 leftPixel = texture(tex, UVs - vec2(1.0, 0.0) / textureSize(tex, 0));
+        vec4 rightPixel = texture(tex, UVs + vec2(1.0, 0.0) / textureSize(tex, 0));
+        
+        float edgeValue = length(centerPixel.rgb - upPixel.rgb) +
+                        length(centerPixel.rgb - downPixel.rgb) +
+                        length(centerPixel.rgb - leftPixel.rgb) +
+                        length(centerPixel.rgb - rightPixel.rgb);
+        
+        // Aplica el color del contorno si se detecta un borde
+        if (edgeValue > edgeThreshold) {
+            fragColor = vec4(outlineColor, 1.0);
+        } else {
+            fragColor = centerPixel;
+        }
+    }
+
+"""
+
+outline_fragment_shader_alternative = """
+    #version 450 core
+
+    layout (binding = 0) uniform sampler2D tex;
+
+    in vec2 UVs;
+    in vec3 normal;
+    out vec4 fragColor;
+
+    uniform vec3 outlineColor  = vec3(1.0, 0.0, 0.0); // Color del contorno
 
     void main() {
         // Umbral para la detección de bordes (ajusta según sea necesario)

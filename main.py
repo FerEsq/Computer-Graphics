@@ -17,13 +17,14 @@ from model import Model
 from shaders import *
 from obj import Obj
 
-width = 960
-height = 540
+width = 500
+height = 500
 
 pygame.init()
 screen = pygame.display.set_mode((width, height), pygame.OPENGL | pygame.DOUBLEBUF)
 clock = pygame.time.Clock()
 
+#Music and soun|d effects
 mii = pygame.mixer.Sound("media/mii.mp3")
 ducky = pygame.mixer.Sound("media/ducky.mp3") 
 octopus = pygame.mixer.Sound("media/octopus.mp3") 
@@ -44,6 +45,35 @@ renderer.setShader(vertex_shader, fragment_shader)
 is_dragging = False
 old_position = None
 catModel = False
+actualShader = 0
+
+#Menu printing
+def printMenu():
+    print("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("Welcome to the 3D model viewer! To see this menu again, press M.")
+    print("We recommend you volume up your speakers to enjoy the experience!")
+
+    print("\nModels available:")
+    print("\t- A cute ducky plush (press 1)")
+    print("\t- A cute litle octopus (press 2)")
+    print("\t- A shiny diamond (press 3)")
+    print("\t- A cute kitty plush (press 4)")
+    print("\t\t* If you have the kitty on your screen, press 9 and 0 for a surprise!")
+
+    print("\nShaders available:")
+    print("\t- Original shader (press n)")
+    print("\t- Party shader (press p)")
+    print("\t- Sparkling shader (press s)")
+    print("\t- Distorsioned shader (press d)")
+    print("\t- Outline shader (press o)")
+    print("\t\t* If you have a shader on your screen, press a for se the alternative version!")
+
+    print("\nControls:")
+    print("\t- Use the arrow keys to rotate the model")
+    print("\t- Use the + and - keys to move the model closer or farther")
+    print("\t- Use the mouse wheel to zoom in and out")
+    print("\t- Use the mouse to rotate the camera around the model")
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
 #Model loading function
 def loadModel(objF):
@@ -107,13 +137,31 @@ radius = distance
 zoom_sensitive = 0.5
 angle = 0.0
 
+printMenu()
 while isRunning:
     deltaTime = clock.tick(60) / 1000.0
     renderer.elapsedTime += deltaTime
-    #keys = pygame.key.get_pressed()
+    keys = pygame.key.get_pressed()
 
     renderer.cameraPosition.x = math.sin(math.radians(angle)) * radius + model.position.x
     renderer.cameraPosition.z = math.cos(math.radians(angle)) * radius + model.position.z
+
+    if keys[K_RIGHT]:
+        model.rotation.y += deltaTime * 50
+    if keys[K_LEFT]:
+        model.rotation.y -= deltaTime * 50
+    if keys[K_UP]:
+        if (model.rotation.x <= 45):
+            model.rotation.x += deltaTime * 50
+    if keys[K_DOWN]:
+        if (model.rotation.x >= -100):
+            model.rotation.x -= deltaTime * 50
+    if keys[K_PLUS]:
+        if (model.position.z <= 0):
+            model.position.z += 0.1
+    if keys[K_MINUS]:
+        if (model.position.z >= -10):
+            model.position.z -= 0.1
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -121,23 +169,48 @@ while isRunning:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 isRunning = False
+            if event.key == pygame.K_m:
+                printMenu()
             if event.key == pygame.K_n:
                 print("Original shader")
                 renderer.setShader(vertex_shader, fragment_shader)
+
             if event.key == pygame.K_p:
                 print("Party shader")
+                actualShader = 1
                 renderer.setShader(vertex_shader, party_fragment_shader)
+
             if event.key == pygame.K_s:
                 print("Sparkling shader")
+                actualShader = 2
                 renderer.setShader(vertex_shader, sparkling_fragment_shader)
+
             if event.key == pygame.K_d:
                 print("Distorsioned shader")
+                actualShader = 3
                 renderer.setShader(vertex_shader, distorsioned_fragment_shader)
+
             if event.key == pygame.K_o:
                 print("Outline shader")
+                actualShader = 4
                 renderer.setShader(vertex_shader, outline_fragment_shader)
 
+            if event.key == pygame.K_a:
+                if (actualShader == 1):
+                    print("Party alternative shader")
+                    renderer.setShader(vertex_shader, party_fragment_shader_alternative)
+                if (actualShader == 2):
+                    print("Sparkling alternative shader")
+                    renderer.setShader(vertex_shader, sparkling_fragment_shader_alternative)
+                if (actualShader == 3):
+                    print("Distorsioned alternative shader")
+                    renderer.setShader(vertex_shader, distorsioned_fragment_shader_alternative)
+                if (actualShader == 4):
+                    print("Outline alternative shader")
+                    renderer.setShader(vertex_shader, outline_fragment_shader_alternative)
+
             if event.key == pygame.K_1:
+                octopus.stop()
                 catModel = False
                 print("A cute ducky plush has enter the scene!")
                 ducky.play()
@@ -156,7 +229,7 @@ while isRunning:
                 
             if event.key == pygame.K_2:
                 catModel = False
-                print("A cute little octopus has enter the scene!")
+                print("A cute litle octopus has enter the scene!")
                 octopus.play()
                 renderer.scene.clear()
                 obj = Obj("models/octopus.obj")
@@ -168,10 +241,11 @@ while isRunning:
                 model.position.y = 0
                 model.position.x = 0
                 model.rotation.y = 180
-                model.scale = glm.vec3(0.10,0.10,0.10)
+                model.scale = glm.vec3(0.15,0.15,0.15)
                 renderer.scene.append(model)
 
             if event.key == pygame.K_3:
+                octopus.stop()
                 catModel = False
                 print("A shiny diamond has enter the scene!")
                 diamond.play()
@@ -189,6 +263,7 @@ while isRunning:
                 renderer.scene.append(model)
 
             if event.key == pygame.K_4:
+                octopus.stop()
                 catModel = True
                 print("A cute kitty plush has enter the scene!")
                 catPlush.play()
@@ -205,9 +280,6 @@ while isRunning:
                 model.scale = glm.vec3(1.5, 1.5, 1.5)
                 renderer.scene.append(model)
             if (catModel == True):
-                if event.key == pygame.K_8:
-                    catPlush.play()
-                    model.loadTexture("textures/catPlushCalico.bmp")
                 if event.key == pygame.K_9:
                     catPlush.play()
                     model.loadTexture("textures/catPlushGray.bmp")
