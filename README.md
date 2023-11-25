@@ -1,52 +1,23 @@
-# Lab-4
-Branch para el laboratorio 4 del curso.
+# Project-3
+Branch para el proyecto 3 del curso.
 
-## Shaders
+## Controles
+  ### Modelos
+  - Para visualizar el primer modelo presione **1**
+  - Para visualizar el segundo modelo presione **2**
+  - Para visualizar el tercer modelo presione **3**
+  - Para visualizar el cuarto modelo presione **4**
+    -   Presisone **9** y **0** para visualizar el easter egg del cuarto modelo
 
-  ### Party shader
-  Consiste en el cambio intermitente entre tres colores (rosa, morado y celeste).
+  ### Shaders
+  - Para visualizar el original shader presione **n**
+  - Para visualizar el party shader presione **p**
+  - Para visualizar el sparkling shader presione **s**
+  - Para visualizar el distorsioned shader presione **d**
+  - Para visualizar el outline shader presione **o**
+  - Presisone **a** para visualizar la versión alternativa de cualquier shader
 
-  <img src="shaders/shader-1.gif" alt="Texto alternativo" width="450" height="250">
-  
-  Para implementarlo utilizar los siguientes vertexShader y fragmentShader:
-  ```bash
-    renderer.setShader(vertex_shader, party_fragment_shader)
-  ```
-
-  U oprimiendo la tecla **5** mientras el programa esté en ejecución.
-
-  ### Sparkling shader
-  Consiste en el cambio intermitente de la iluminación de la escena, se puede modificar la velocidad del cambio.
-
-  <img src="shaders/shader-2.gif" alt="Texto alternativo" width="450" height="250">
-  
-  Para implementarlo utilizar los siguientes vertexShader y fragmentShader:
-  ```bash
-    renderer.setShader(vertex_shader, sparkling_fragment_shader)
-  ```
-
-  U oprimiendo la tecla **6** mientras el programa esté en ejecución.
-
-  ### Distorsioned shader
-  Consiste en el movimiento ondular de la textura dentro del modelo, intenta simular el comportamiento del movimiento del agua.
-
-  <img src="shaders/shader-3.gif" alt="Texto alternativo" width="450" height="250">
-  
-  Para implementarlo utilizar los siguientes vertexShader y fragmentShader:
-  ```bash
-    renderer.setShader(vertex_shader, distorsioned_fragment_shader)
-  ```
-
-  U oprimiendo la tecla **7** mientras el programa esté en ejecución.
-
-  ### Outline shader
-  Consiste en delineado del modelo en color negro.
-
-  <img src="shaders/shader-4.png" alt="Texto alternativo" width="450" height="250">
-  
-  Para implementarlo utilizar los siguientes vertexShader y fragmentShader:
-  ```bash
-    renderer.setShader(vertex_shader, outline_fragment_shader)
-  ```
-
-  U oprimiendo la tecla **8** mientras el programa esté en ejecución.
+  ### Movimiento de la cámara
+  - Utilice las teclas de flecha para rotar el modelo
+  - Utilice las teclas **+** y **-** para alejar y acercar el modelo
+  - Utilice el mouse para rotar la cámara alrededor del modelo
